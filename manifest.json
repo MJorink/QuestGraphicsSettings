@@ -1,0 +1,10 @@
+{
+    "name": "QuestGraphicsSettings",
+    "version_number": "1.0.0",
+    "website_url": "https://github.com/MJorink/QuestGraphicsSettings",
+    "description": "A mod that brings some graphics settings to Quest devices.",
+    "dependencies": [
+        "bonelib-BoneLib-3.2.0",
+        "LavaGang-MelonLoader-0.6.5"
+    ]
+}

@@ -15,7 +15,7 @@ namespace QuestGraphicsSettings {
         MelonPreferences_Entry<bool> FogEntry;
         MelonPreferences_Entry<float> RenderScaleEntry;
         MelonPreferences_Entry<bool> TextureStreamingEntry;
-        MelonPreferences_Entry<int> TextureStreamingBudgetEntry;
+        MelonPreferences_Entry<float> TextureStreamingBudgetEntry;
 
         private GameObject fogObject;
         
@@ -28,9 +28,9 @@ namespace QuestGraphicsSettings {
             Page page = Page.Root.CreatePage("Quest Graphics Settings", Color.yellow);
             page.CreateFunction("PRESS ME", Color.red, () => { Warning(); });
             page.CreateBool("Fog", Color.yellow, FogEntry.Value, (a) => { FogEntry.Value = a; });
-            page.CreateFloat("Render Scale", Color.yellow, RenderScaleEntry.Value, 0.05f, 0.40f, 2.0f, (a) => { RenderScaleEntry.Value = a; });
+            page.CreateFloat("Render Scale", Color.yellow, RenderScaleEntry.Value, 0.05f, 0.40f, 1.0f, (a) => { RenderScaleEntry.Value = a; });
             page.CreateBool("Texture Streaming", Color.yellow, TextureStreamingEntry.Value, (a) => { TextureStreamingEntry.Value = a; });
-            page.CreateInt("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 16, 16, 3072, (a) => { TextureStreamingBudgetEntry.Value = a; });
+            page.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 16f, 16f, 3072f, (a) => { TextureStreamingBudgetEntry.Value = a; });
             page.CreateFunction("Apply Settings", Color.green, () => { ApplySettings(); });
         }
 
@@ -39,7 +39,7 @@ namespace QuestGraphicsSettings {
             FogEntry = category.CreateEntry("Fog Enabled", true);
             RenderScaleEntry = category.CreateEntry("Render Scale", 1.0f);
             TextureStreamingEntry = category.CreateEntry("Texture Streaming Enabled", true);
-            TextureStreamingBudgetEntry = category.CreateEntry("Texture Streaming Budget", 3072);
+            TextureStreamingBudgetEntry = category.CreateEntry("Texture Streaming Budget", 3072f);
             MelonPreferences.Save();
             category.SaveToFile();
         }
@@ -52,7 +52,7 @@ namespace QuestGraphicsSettings {
         private void Warning() {
              Menu.DisplayDialog(
             "WARNING",
-            "Using high settings will cause lag or crashes. Texture Streaming should be on for most users. Also, don't forget to apply the settings after changing them!"
+            "Using high settings will cause lag or crashes. Texture Streaming should be kept on for most users. Also, don't forget to apply the settings after changing them!"
             );
         }
 
@@ -64,8 +64,7 @@ namespace QuestGraphicsSettings {
         }
 
         private void SetRenderScale() {
-        var urp = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
-        urp.renderScale = RenderScaleEntry.Value;
+        UnityEngine.XR.XRSettings.renderViewportScale = RenderScaleEntry.Value;
         }
 
         private void SetTextureStreaming() {
