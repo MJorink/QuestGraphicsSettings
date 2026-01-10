@@ -2,8 +2,6 @@
 using MelonLoader.Preferences;
 using BoneLib.BoneMenu;
 using UnityEngine;
-using Il2Cpp;
-using Il2CppInterop.Runtime;
 
 [assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "1.0.0", "jorink")]
 [assembly: MelonGame("Stress Level Zero", "BONELAB")]
@@ -14,8 +12,6 @@ namespace QuestGraphicsSettings {
         MelonPreferences_Category category;
         MelonPreferences_Entry<bool> FogEntry;
         private GameObject fogObject;
-
-        //private static bool FogState;
         
         public override void OnInitializeMelon() {
             MelonPrefs();
@@ -25,7 +21,7 @@ namespace QuestGraphicsSettings {
         private void GraphicsMenu() {
             Page page = Page.Root.CreatePage("Quest Graphics Settings", Color.yellow);
             page.CreateBool("Fog", Color.gray, FogEntry.Value, (a) => { FogEntry.Value = a; });
-            page.CreateFunction("Apply Settings", Color.white, () => { ApplySettings(); });
+            page.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
         }
 
         private void MelonPrefs() {
@@ -37,7 +33,6 @@ namespace QuestGraphicsSettings {
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
             base.OnSceneWasLoaded(buildIndex, sceneName);
-            //example = exampleEntry.Value;
         }
 
         private void ApplySettings() {
