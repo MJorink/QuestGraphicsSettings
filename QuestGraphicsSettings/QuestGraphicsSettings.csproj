@@ -21,14 +21,8 @@
 		<Reference Include="BoneLib">
 		  <HintPath>$(BONELAB_DIR)\Mods\BoneLib.dll</HintPath>
 		</Reference>
-		<Reference Include="Il2CppFacepunch.Steamworks.Win64">
-			<HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppFacepunch.Steamworks.Win64.dll</HintPath>
-		</Reference>
 		<Reference Include="Il2CppGoogle.Protobuf">
 			<HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppGoogle.Protobuf.dll</HintPath>
-		</Reference>
-		<Reference Include="Il2CppGrpc.Core">
-			<HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppGrpc.Core.dll</HintPath>
 		</Reference>
 		<Reference Include="Il2CppHBAO.Demo.Runtime">
 			<HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppHBAO.Demo.Runtime.dll</HintPath>
@@ -105,9 +99,6 @@
 		<Reference Include="Il2CppRayFireAssembly">
 			<HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppRayFireAssembly.dll</HintPath>
 		</Reference>
-		<Reference Include="Il2CppRFLib_DotNet_2018">
-			<HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppRFLib_DotNet_2018.dll</HintPath>
-		</Reference>
 		<Reference Include="Il2CppRootMotion">
 			<HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppRootMotion.dll</HintPath>
 		</Reference>
@@ -161,9 +152,6 @@
 		</Reference>
 		<Reference Include="Il2CppSystem.Runtime.Serialization">
 			<HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppSystem.Runtime.Serialization.dll</HintPath>
-		</Reference>
-		<Reference Include="Il2CppSystem.ServiceModel.Internals">
-			<HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppSystem.ServiceModel.Internals.dll</HintPath>
 		</Reference>
 		<Reference Include="Il2CppSystem.Threading.Channels">
 			<HintPath>$(BONELAB_DIR)\MelonLoader\Il2CppAssemblies\Il2CppSystem.Threading.Channels.dll</HintPath>

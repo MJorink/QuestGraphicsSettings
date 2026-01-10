@@ -3,6 +3,7 @@ using MelonLoader.Preferences;
 using BoneLib.BoneMenu;
 using UnityEngine;
 using Il2Cpp;
+using Il2CppInterop.Runtime;
 
 [assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "1.0.0", "jorink")]
 [assembly: MelonGame("Stress Level Zero", "BONELAB")]
@@ -11,8 +12,9 @@ namespace QuestGraphicsSettings {
     public class Core : MelonMod {
 
         MelonPreferences_Category category;
+        MelonPreferences_Entry<bool> FogEntry;
 
-        private static bool FogState;
+        //private static bool FogState;
         
         public override void OnInitializeMelon() {
             MelonPrefs();
@@ -21,11 +23,13 @@ namespace QuestGraphicsSettings {
 
         private void GraphicsMenu() {
             Page page = Page.Root.CreatePage("Quest Graphics Settings", Color.yellow);
-            page.CreateFunction("Toggle Fog", Color.green, () => { ToggleFog(); });
+            page.CreateBool("Fog", Color.gray, FogEntry.Value, (a) => { FogEntry.Value = a; });
+            page.CreateFunction("Apply Settings", Color.white, () => { ApplySettings(); });
         }
 
         private void MelonPrefs() {
             category = MelonPreferences.CreateCategory("QuestGraphicsSettings");
+            FogEntry = category.CreateEntry("Fog Enabled", true);
             MelonPreferences.Save();
             category.SaveToFile();
         }
@@ -35,18 +39,22 @@ namespace QuestGraphicsSettings {
             //example = exampleEntry.Value;
         }
 
-        private static void ToggleFog()
+        private void ApplySettings() {
+            ToggleFog();
+        }
+
+        private void ToggleFog()
         {
-            FogState = !FogState;
-            foreach (VolumetricRendering item in GameObject.FindObjectsOfType<VolumetricRendering>()) {
-                if (!FogState)
-                {
-                    item.disable();
-                }
-                else
-                {
-                    item.enable();
-                }
+            //FogState = !FogState;
+            var fog = GameObject.Find("Volumetrics");
+            if (fog != null)
+            {
+                fog.SetActive(FogEntry.Value);
+                MelonLogger.Msg($"Volumetrics set to {FogEntry.Value}");
+            }
+            else
+            {
+                MelonLogger.Warning("Volumetrics object not found");
             }
         }
             

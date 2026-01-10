@@ -4,6 +4,7 @@ A mod that brings some graphics settings to quest devices, aswell as some extra 
 ## Current Settings (on release)
 - Render Scale
 - Texture Streaming Budget + Toggle
+- Fog Toggle
 - LOD Bias
 - MSAA
 
