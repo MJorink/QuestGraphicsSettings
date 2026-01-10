@@ -13,6 +13,7 @@ namespace QuestGraphicsSettings {
 
         MelonPreferences_Category category;
         MelonPreferences_Entry<bool> FogEntry;
+        private GameObject fogObject;
 
         //private static bool FogState;
         
@@ -45,16 +46,14 @@ namespace QuestGraphicsSettings {
 
         private void ToggleFog()
         {
-            //FogState = !FogState;
-            var fog = GameObject.Find("Volumetrics");
-            if (fog != null)
+            if (fogObject == null)
             {
-                fog.SetActive(FogEntry.Value);
-                MelonLogger.Msg($"Volumetrics set to {FogEntry.Value}");
+                fogObject = GameObject.Find("Volumetrics");
             }
-            else
+            
+            if (fogObject != null)
             {
-                MelonLogger.Warning("Volumetrics object not found");
+                fogObject.SetActive(FogEntry.Value);
             }
         }
             
