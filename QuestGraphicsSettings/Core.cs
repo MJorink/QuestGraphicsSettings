@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-[assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "1.0.0", "jorink")]
+[assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "1.1.0", "jorink")]
 [assembly: MelonGame("Stress Level Zero", "BONELAB")]
 
 namespace QuestGraphicsSettings {
@@ -16,6 +16,7 @@ namespace QuestGraphicsSettings {
         MelonPreferences_Entry<float> RenderScaleEntry;
         MelonPreferences_Entry<bool> TextureStreamingEntry;
         MelonPreferences_Entry<float> TextureStreamingBudgetEntry;
+        MelonPreferences_Entry<float> LODBiasEntry;
 
         private GameObject fogObject;
         
@@ -27,11 +28,12 @@ namespace QuestGraphicsSettings {
         private void GraphicsMenu() {
             Page page = Page.Root.CreatePage("Quest Graphics Settings", Color.yellow);
             page.CreateFunction("PRESS ME", Color.red, () => { Warning(); });
-            page.CreateBool("Fog", Color.yellow, FogEntry.Value, (a) => { FogEntry.Value = a; });
-            page.CreateFloat("Render Scale", Color.yellow, RenderScaleEntry.Value, 0.05f, 0.40f, 1.0f, (a) => { RenderScaleEntry.Value = a; });
-            page.CreateBool("Texture Streaming", Color.yellow, TextureStreamingEntry.Value, (a) => { TextureStreamingEntry.Value = a; });
+            page.CreateBool("Fog", Color.green, FogEntry.Value, (a) => { FogEntry.Value = a; });
+            page.CreateFloat("Render Scale", Color.green, RenderScaleEntry.Value, 0.05f, 0.40f, 1.0f, (a) => { RenderScaleEntry.Value = a; });
+            page.CreateBool("Texture Streaming", Color.red, TextureStreamingEntry.Value, (a) => { TextureStreamingEntry.Value = a; });
             page.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 16f, 16f, 3072f, (a) => { TextureStreamingBudgetEntry.Value = a; });
-            page.CreateFunction("Apply Settings", Color.green, () => { ApplySettings(); });
+            page.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { LODBiasEntry.Value = a; });
+            page.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
         }
 
         private void MelonPrefs() {
@@ -39,14 +41,22 @@ namespace QuestGraphicsSettings {
             FogEntry = category.CreateEntry("Fog Enabled", true);
             RenderScaleEntry = category.CreateEntry("Render Scale", 1.0f);
             TextureStreamingEntry = category.CreateEntry("Texture Streaming Enabled", true);
-            TextureStreamingBudgetEntry = category.CreateEntry("Texture Streaming Budget", 3072f);
+            TextureStreamingBudgetEntry = category.CreateEntry("Texture Streaming Budget", 512f);
+            LODBiasEntry = category.CreateEntry("LOD Bias", 1.0f);
             MelonPreferences.Save();
             category.SaveToFile();
         }
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
             base.OnSceneWasLoaded(buildIndex, sceneName);
+            //LogDefaults();
             ApplySettings();
+        }
+
+        private void LogDefaults() {
+            MelonLogger.Msg("Default Texture Streaming: " + QualitySettings.streamingMipmapsActive);
+            MelonLogger.Msg("Default Texture Streaming Budget: " + QualitySettings.streamingMipmapsMemoryBudget);
+            MelonLogger.Msg("Default LOD Bias: " + QualitySettings.lodBias);
         }
 
         private void Warning() {
@@ -60,6 +70,7 @@ namespace QuestGraphicsSettings {
             SetFog();
             SetRenderScale();
             SetTextureStreaming();
+            SetLODBias();
             MelonPreferences.Save();
         }
 
@@ -70,6 +81,10 @@ namespace QuestGraphicsSettings {
         private void SetTextureStreaming() {
             QualitySettings.streamingMipmapsActive = TextureStreamingEntry.Value;
             QualitySettings.streamingMipmapsMemoryBudget = TextureStreamingBudgetEntry.Value;
+        }
+
+        private void SetLODBias() {
+            QualitySettings.lodBias = LODBiasEntry.Value;
         }
 
         private void SetFog()
