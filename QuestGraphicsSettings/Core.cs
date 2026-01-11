@@ -18,6 +18,9 @@ namespace QuestGraphicsSettings {
         MelonPreferences_Entry<float> TextureStreamingBudgetEntry;
         MelonPreferences_Entry<float> LODBiasEntry;
         MelonPreferences_Entry<float> RenderDistanceEntry;
+        MelonPreferences_Entry<bool> FSREnabledEntry;
+        MelonPreferences_Entry<float> FSRSharpnessEntry;
+        MelonPreferences_Entry<bool> FSROverideEntry;
 
         private Camera playerCamera;
         private GameObject fogObject;
@@ -36,6 +39,10 @@ namespace QuestGraphicsSettings {
             page.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 16f, 16f, 3072f, (a) => { TextureStreamingBudgetEntry.Value = a; });
             page.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { LODBiasEntry.Value = a; });
             page.CreateFloat("Render Distance", Color.green, RenderDistanceEntry.Value, 5f, 10f, 100f, (a) => { RenderDistanceEntry.Value = a; });
+            page.CreateBool("FSR", Color.green, FSREnabledEntry.Value, (a) => { FSREnabledEntry.Value = a; });
+            page.CreateFloat("FSR Sharpness", Color.green, FSRSharpnessEntry.Value, 0.1f, 0f, 1f, (a) => { FSRSharpnessEntry.Value = a; });
+            page.CreateBool("Override FSR Sharpness", Color.green, FSROverideEntry.Value, (a) => { FSROverideEntry.Value = a; });
+            page.CreateFunction("Apply FSR", Color.cyan, () => { UpdateFSR(); });
             page.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
         }
 
@@ -55,6 +62,7 @@ namespace QuestGraphicsSettings {
             base.OnSceneWasLoaded(buildIndex, sceneName);
             //LogDefaults();
             ApplySettings();
+            UpdateFSR();
         }
 
         private void LogDefaults() {
@@ -117,6 +125,23 @@ namespace QuestGraphicsSettings {
 			}
 			playerCamera.useOcclusionCulling = true;
 		}
-            
+
+        private void UpdateFSR()
+		{
+			UniversalRenderPipelineAsset asset = UniversalRenderPipeline.asset;
+			if (FSREnabledEntry.Value)
+			{
+				asset.upscalingFilter = (UpscalingFilterSelection)3;
+			}
+			else
+			{
+				asset.upscalingFilter = (UpscalingFilterSelection)0;
+			}
+			asset.fsrOverrideSharpness = FSROverideEntry.Value;
+			if (FSROverideEntry.Value)
+			{
+				asset.fsrSharpness = FSRSharpnessEntry.Value;
+			}
+		}    
     }
 }
