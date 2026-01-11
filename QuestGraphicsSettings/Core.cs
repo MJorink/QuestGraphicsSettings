@@ -17,7 +17,9 @@ namespace QuestGraphicsSettings {
         MelonPreferences_Entry<bool> TextureStreamingEntry;
         MelonPreferences_Entry<float> TextureStreamingBudgetEntry;
         MelonPreferences_Entry<float> LODBiasEntry;
+        MelonPreferences_Entry<float> RenderDistanceEntry;
 
+        private Camera playerCamera;
         private GameObject fogObject;
         
         public override void OnInitializeMelon() {
@@ -33,6 +35,7 @@ namespace QuestGraphicsSettings {
             page.CreateBool("Texture Streaming", Color.red, TextureStreamingEntry.Value, (a) => { TextureStreamingEntry.Value = a; });
             page.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 16f, 16f, 3072f, (a) => { TextureStreamingBudgetEntry.Value = a; });
             page.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { LODBiasEntry.Value = a; });
+            page.CreateFloat("Render Distance", Color.green, RenderDistanceEntry.Value, 5f, 10f, 100f, (a) => { RenderDistanceEntry.Value = a; });
             page.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
         }
 
@@ -43,6 +46,7 @@ namespace QuestGraphicsSettings {
             TextureStreamingEntry = category.CreateEntry("Texture Streaming Enabled", true);
             TextureStreamingBudgetEntry = category.CreateEntry("Texture Streaming Budget", 512f);
             LODBiasEntry = category.CreateEntry("LOD Bias", 1.0f);
+            RenderDistanceEntry = category.CreateEntry("Render Distance", 60f);
             MelonPreferences.Save();
             category.SaveToFile();
         }
@@ -71,6 +75,7 @@ namespace QuestGraphicsSettings {
             SetRenderScale();
             SetTextureStreaming();
             SetLODBias();
+            SetRenderDistance();
             MelonPreferences.Save();
         }
 
@@ -99,6 +104,19 @@ namespace QuestGraphicsSettings {
                 fogObject.SetActive(FogEntry.Value);
             }
         }
+
+        private void SetRenderDistance()
+		{
+			if ((UnityEngine.Object)(object)playerCamera == (UnityEngine.Object)null)
+			{
+				playerCamera = UnityEngine.Object.FindObjectOfType<Camera>();
+			}
+			if ((UnityEngine.Object)(object)playerCamera != (UnityEngine.Object)null)
+			{
+				playerCamera.farClipPlane = RenderDistanceEntry.Value;
+			}
+			playerCamera.useOcclusionCulling = true;
+		}
             
     }
 }
