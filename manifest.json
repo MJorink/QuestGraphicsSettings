@@ -1,6 +1,6 @@
 {
     "name": "QuestGraphicsSettings",
-    "version_number": "1.0.0",
+    "version_number": "1.1.0",
     "website_url": "https://github.com/MJorink/QuestGraphicsSettings",
     "description": "A mod that brings some graphics settings to Quest devices.",
     "dependencies": [

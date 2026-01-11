@@ -1,18 +1,20 @@
 # QuestGraphicsSettings
 A mod that brings some graphics settings to Quest devices.
-PC is untested, last tested on Melonloader 0.6.5, BoneLab patch 6
+Most features are also useful for low-end PC's, but PC is untested! 
+Last tested on Melonloader 0.6.5, BoneLab patch 6
 
 ## Current Features
 - Render Scale
 - Texture Streaming Budget + Toggle
 - Fog Toggle
-
-## Planned:
-- FSR, there is already a mod that is supposed to do this: https://thunderstore.io/c/bonelab/p/Elijoe/BonelabFSR
-but that mod does not seem to work. (for me atleast), so I will see if I can get it to work.
 - LOD Bias
-- MSAA
+- Render Distance
+- Experimental Tweaks (Recommended to NOT use, only added so I can test them later. Will probably cause issues if enabled!)
+
+## Discord Server
+Join the Discord server to chat, give suggestions, report issues, and get sneak peeks!
+https://discord.gg/Tu7Pnq4RV7
 
 ## Credits
-- Inspiration Texture Settings: https://thunderstore.io/c/bonelab/p/Zer0Bytes/TextureStreamingBudget/
-- Inspiration Fog Toggle: https://thunderstore.io/c/bonelab/p/extraes/FogToggler/
+- Inspiration Texture Settings: [TextureStreamingBudget](https://thunderstore.io/c/bonelab/p/Zer0Bytes/TextureStreamingBudget/)
+- Inspiration Fog Toggle: [FogToggler](https://thunderstore.io/c/bonelab/p/extraes/FogToggler/)
