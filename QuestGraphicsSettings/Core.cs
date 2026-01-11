@@ -31,19 +31,21 @@ namespace QuestGraphicsSettings {
         }
 
         private void GraphicsMenu() {
-            Page page = Page.Root.CreatePage("Quest Graphics Settings", Color.yellow);
-            page.CreateFunction("PRESS ME", Color.red, () => { Warning(); });
-            page.CreateBool("Fog", Color.green, FogEntry.Value, (a) => { FogEntry.Value = a; });
-            page.CreateFloat("Render Scale", Color.green, RenderScaleEntry.Value, 0.05f, 0.40f, 1.0f, (a) => { RenderScaleEntry.Value = a; });
-            page.CreateBool("Texture Streaming", Color.red, TextureStreamingEntry.Value, (a) => { TextureStreamingEntry.Value = a; });
-            page.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 16f, 16f, 3072f, (a) => { TextureStreamingBudgetEntry.Value = a; });
-            page.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { LODBiasEntry.Value = a; });
-            page.CreateFloat("Render Distance", Color.green, RenderDistanceEntry.Value, 5f, 10f, 100f, (a) => { RenderDistanceEntry.Value = a; });
-            page.CreateBool("FSR", Color.green, FSREnabledEntry.Value, (a) => { FSREnabledEntry.Value = a; });
-            page.CreateFloat("FSR Sharpness", Color.green, FSRSharpnessEntry.Value, 0.1f, 0f, 1f, (a) => { FSRSharpnessEntry.Value = a; });
-            page.CreateBool("Override FSR Sharpness", Color.green, FSROverideEntry.Value, (a) => { FSROverideEntry.Value = a; });
-            page.CreateFunction("Apply FSR", Color.cyan, () => { UpdateFSR(); });
-            page.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
+            Page defaultPage = Page.Root.CreatePage("Quest Graphics Settings", Color.yellow);
+            defaultPage.CreateBool("Fog", Color.green, FogEntry.Value, (a) => { FogEntry.Value = a; });
+            defaultPage.CreateFloat("Render Scale", Color.green, RenderScaleEntry.Value, 0.05f, 0.40f, 1.0f, (a) => { RenderScaleEntry.Value = a; });
+            defaultPage.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 16f, 16f, 3072f, (a) => { TextureStreamingBudgetEntry.Value = a; });
+            defaultPage.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { LODBiasEntry.Value = a; });
+            defaultPage.CreateFloat("Render Distance", Color.green, RenderDistanceEntry.Value, 5f, 10f, 100f, (a) => { RenderDistanceEntry.Value = a; });
+            defaultPage.CreateBool("FSR", Color.green, FSREnabledEntry.Value, (a) => { FSREnabledEntry.Value = a; });
+            defaultPage.CreateBool("Manual FSR Sharpness", Color.green, FSROverideEntry.Value, (a) => { FSROverideEntry.Value = a; });
+            defaultPage.CreateFloat("FSR Sharpness", Color.green, FSRSharpnessEntry.Value, 0.1f, 0f, 1f, (a) => { FSRSharpnessEntry.Value = a; });
+            defaultPage.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
+            
+            Page advancedPage = defaultPage.CreatePage("Advanced Settings", Color.red);
+            advancedPage.CreateFunction("PRESS ME", Color.red, () => { Warning(); });
+            advancedPage.CreateBool("Texture Streaming", Color.red, TextureStreamingEntry.Value, (a) => { TextureStreamingEntry.Value = a; });
+            advancedPage.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
         }
 
         private void MelonPrefs() {
@@ -54,21 +56,15 @@ namespace QuestGraphicsSettings {
             TextureStreamingBudgetEntry = category.CreateEntry("Texture Streaming Budget", 512f);
             LODBiasEntry = category.CreateEntry("LOD Bias", 1.0f);
             RenderDistanceEntry = category.CreateEntry("Render Distance", 60f);
+            FSREnabledEntry = category.CreateEntry("FSR Enabled", false);
+            FSRSharpnessEntry = category.CreateEntry("FSR Sharpness", 0.5f);
+            FSROverideEntry = category.CreateEntry("FSR Sharpness Override", false);
             MelonPreferences.Save();
             category.SaveToFile();
         }
 
-        public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
-            base.OnSceneWasLoaded(buildIndex, sceneName);
-            //LogDefaults();
-            ApplySettings();
-            UpdateFSR();
-        }
-
         private void LogDefaults() {
-            MelonLogger.Msg("Default Texture Streaming: " + QualitySettings.streamingMipmapsActive);
-            MelonLogger.Msg("Default Texture Streaming Budget: " + QualitySettings.streamingMipmapsMemoryBudget);
-            MelonLogger.Msg("Default LOD Bias: " + QualitySettings.lodBias);
+            MelonLogger.Msg("Example Default: " + QualitySettings.streamingMipmapsActive);
         }
 
         private void Warning() {
@@ -78,25 +74,24 @@ namespace QuestGraphicsSettings {
             );
         }
 
+        public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
+            base.OnSceneWasLoaded(buildIndex, sceneName);
+            //LogDefaults();
+            ApplySettings();
+        }
+
         private void ApplySettings() {
+            SetMisc();
             SetFog();
-            SetRenderScale();
-            SetTextureStreaming();
-            SetLODBias();
             SetRenderDistance();
+            SetFSR();
             MelonPreferences.Save();
         }
 
-        private void SetRenderScale() {
-        UnityEngine.XR.XRSettings.renderViewportScale = RenderScaleEntry.Value;
-        }
-
-        private void SetTextureStreaming() {
+        private void SetMisc() {
+            UnityEngine.XR.XRSettings.renderViewportScale = RenderScaleEntry.Value;
             QualitySettings.streamingMipmapsActive = TextureStreamingEntry.Value;
             QualitySettings.streamingMipmapsMemoryBudget = TextureStreamingBudgetEntry.Value;
-        }
-
-        private void SetLODBias() {
             QualitySettings.lodBias = LODBiasEntry.Value;
         }
 
@@ -126,7 +121,7 @@ namespace QuestGraphicsSettings {
 			playerCamera.useOcclusionCulling = true;
 		}
 
-        private void UpdateFSR()
+        private void SetFSR()
 		{
 			UniversalRenderPipelineAsset asset = UniversalRenderPipeline.asset;
 			if (FSREnabledEntry.Value)
@@ -137,6 +132,7 @@ namespace QuestGraphicsSettings {
 			{
 				asset.upscalingFilter = (UpscalingFilterSelection)0;
 			}
+
 			asset.fsrOverrideSharpness = FSROverideEntry.Value;
 			if (FSROverideEntry.Value)
 			{
