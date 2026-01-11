@@ -8,11 +8,11 @@ Last tested on Melonloader 0.6.5, BoneLab patch 6
 - Texture Streaming Budget + Toggle
 - Fog Toggle
 - LOD Bias
-- FSR
 
 ## Discord Server
+Join the Discord server to chat, give suggestions, report issues, and get sneak peeks!
 https://discord.gg/Tu7Pnq4RV7
 
 ## Credits
-- Inspiration Texture Settings: https://thunderstore.io/c/bonelab/p/Zer0Bytes/TextureStreamingBudget/
-- Inspiration Fog Toggle: https://thunderstore.io/c/bonelab/p/extraes/FogToggler/
+- Inspiration Texture Settings: [TextureStreamingBudget](https://thunderstore.io/c/bonelab/p/Zer0Bytes/TextureStreamingBudget/)
+- Inspiration Fog Toggle: [FogToggler](https://thunderstore.io/c/bonelab/p/extraes/FogToggler/)

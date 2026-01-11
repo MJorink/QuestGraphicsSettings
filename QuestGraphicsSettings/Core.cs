@@ -18,9 +18,7 @@ namespace QuestGraphicsSettings {
         MelonPreferences_Entry<float> TextureStreamingBudgetEntry;
         MelonPreferences_Entry<float> LODBiasEntry;
         MelonPreferences_Entry<float> RenderDistanceEntry;
-        MelonPreferences_Entry<bool> FSREnabledEntry;
-        MelonPreferences_Entry<float> FSRSharpnessEntry;
-        MelonPreferences_Entry<bool> FSROverideEntry;
+        MelonPreferences_Entry<bool> ExperimentalEntry;
 
         private Camera playerCamera;
         private GameObject fogObject;
@@ -33,38 +31,30 @@ namespace QuestGraphicsSettings {
         private void GraphicsMenu() {
             Page defaultPage = Page.Root.CreatePage("Quest Graphics Settings", Color.yellow);
             defaultPage.CreateBool("Fog", Color.green, FogEntry.Value, (a) => { FogEntry.Value = a; });
-            defaultPage.CreateFloat("Render Scale", Color.green, RenderScaleEntry.Value, 0.05f, 0.40f, 1.0f, (a) => { RenderScaleEntry.Value = a; });
-            defaultPage.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 16f, 16f, 3072f, (a) => { TextureStreamingBudgetEntry.Value = a; });
+            defaultPage.CreateFloat("Render Scale", Color.green, RenderScaleEntry.Value, 0.05f, 0.40f, 2.0f, (a) => { RenderScaleEntry.Value = a; });
+            defaultPage.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 32f, 32f, 3072f, (a) => { TextureStreamingBudgetEntry.Value = a; });
             defaultPage.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { LODBiasEntry.Value = a; });
-            defaultPage.CreateFloat("Render Distance", Color.green, RenderDistanceEntry.Value, 5f, 10f, 100f, (a) => { RenderDistanceEntry.Value = a; });
-            defaultPage.CreateBool("FSR", Color.green, FSREnabledEntry.Value, (a) => { FSREnabledEntry.Value = a; });
-            defaultPage.CreateBool("Manual FSR Sharpness", Color.green, FSROverideEntry.Value, (a) => { FSROverideEntry.Value = a; });
-            defaultPage.CreateFloat("FSR Sharpness", Color.green, FSRSharpnessEntry.Value, 0.1f, 0f, 1f, (a) => { FSRSharpnessEntry.Value = a; });
+            defaultPage.CreateFloat("Render Distance", Color.yellow, RenderDistanceEntry.Value, 5f, 10f, 100f, (a) => { RenderDistanceEntry.Value = a; });
             defaultPage.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
             
             Page advancedPage = defaultPage.CreatePage("Advanced Settings", Color.red);
             advancedPage.CreateFunction("PRESS ME", Color.red, () => { Warning(); });
             advancedPage.CreateBool("Texture Streaming", Color.red, TextureStreamingEntry.Value, (a) => { TextureStreamingEntry.Value = a; });
+            advancedPage.CreateBool("Experimental Tweaks (May cause issues)", Color.red, ExperimentalEntry.Value, (a) => { ExperimentalEntry.Value = a; });
             advancedPage.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
         }
 
         private void MelonPrefs() {
             category = MelonPreferences.CreateCategory("QuestGraphicsSettings");
             FogEntry = category.CreateEntry("Fog Enabled", true);
-            RenderScaleEntry = category.CreateEntry("Render Scale", 1.0f);
+            RenderScaleEntry = category.CreateEntry("Render Scale", 0.9f);
             TextureStreamingEntry = category.CreateEntry("Texture Streaming Enabled", true);
-            TextureStreamingBudgetEntry = category.CreateEntry("Texture Streaming Budget", 512f);
-            LODBiasEntry = category.CreateEntry("LOD Bias", 1.0f);
-            RenderDistanceEntry = category.CreateEntry("Render Distance", 60f);
-            FSREnabledEntry = category.CreateEntry("FSR Enabled", false);
-            FSRSharpnessEntry = category.CreateEntry("FSR Sharpness", 0.5f);
-            FSROverideEntry = category.CreateEntry("FSR Sharpness Override", false);
+            TextureStreamingBudgetEntry = category.CreateEntry("Texture Streaming Budget", 256f);
+            LODBiasEntry = category.CreateEntry("LOD Bias", 0.85f);
+            RenderDistanceEntry = category.CreateEntry("Render Distance", 80f);
+            ExperimentalEntry = category.CreateEntry("Experimental Tweaks", false);
             MelonPreferences.Save();
             category.SaveToFile();
-        }
-
-        private void LogDefaults() {
-            MelonLogger.Msg("Example Default: " + QualitySettings.streamingMipmapsActive);
         }
 
         private void Warning() {
@@ -76,7 +66,6 @@ namespace QuestGraphicsSettings {
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
             base.OnSceneWasLoaded(buildIndex, sceneName);
-            //LogDefaults();
             ApplySettings();
         }
 
@@ -84,12 +73,11 @@ namespace QuestGraphicsSettings {
             SetMisc();
             SetFog();
             SetRenderDistance();
-            SetFSR();
-            MelonPreferences.Save();
+            SetRenderScale();
+            SetExperimental();
         }
 
         private void SetMisc() {
-            UnityEngine.XR.XRSettings.renderViewportScale = RenderScaleEntry.Value;
             QualitySettings.streamingMipmapsActive = TextureStreamingEntry.Value;
             QualitySettings.streamingMipmapsMemoryBudget = TextureStreamingBudgetEntry.Value;
             QualitySettings.lodBias = LODBiasEntry.Value;
@@ -121,23 +109,42 @@ namespace QuestGraphicsSettings {
 			playerCamera.useOcclusionCulling = true;
 		}
 
-        private void SetFSR()
+        private void SetRenderScale()
 		{
 			UniversalRenderPipelineAsset asset = UniversalRenderPipeline.asset;
-			if (FSREnabledEntry.Value)
-			{
-				asset.upscalingFilter = (UpscalingFilterSelection)3;
-			}
-			else
-			{
-				asset.upscalingFilter = (UpscalingFilterSelection)0;
-			}
+			asset.renderScale = RenderScaleEntry.Value;
+        }   
 
-			asset.fsrOverrideSharpness = FSROverideEntry.Value;
-			if (FSROverideEntry.Value)
-			{
-				asset.fsrSharpness = FSRSharpnessEntry.Value;
-			}
-		}    
+        private void SetExperimental() {
+            // Experimental settings for performance research
+            if (ExperimentalEntry.Value) {
+            	RenderSettings.defaultReflectionMode = DefaultReflectionMode.Custom;
+				RenderSettings.defaultReflectionResolution = 16;
+				RenderSettings.customReflection = null;
+                QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
+                QualitySettings.pixelLightCount = 0;
+                QualitySettings.softVegetation = false;
+                QualitySettings.particleRaycastBudget = 0;
+                Physics.defaultSolverIterations = 1;
+                Physics.defaultSolverVelocityIterations = 1;
+                Physics.sleepThreshold = 0.04f;
+                Physics.defaultContactOffset = 0.01f;
+                }
+
+            // Default BoneLab settings found by logging
+            if (!ExperimentalEntry.Value) {
+                RenderSettings.defaultReflectionMode = DefaultReflectionMode.Skybox;
+                RenderSettings.defaultReflectionResolution = 128;
+                QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
+                QualitySettings.pixelLightCount = 99;
+                QualitySettings.softVegetation = true;
+                QualitySettings.particleRaycastBudget = 512;
+                Physics.defaultSolverIterations = 6;
+                Physics.defaultSolverVelocityIterations = 2;
+                Physics.sleepThreshold = 0.01f;
+                Physics.defaultContactOffset = 0.0055f;
+                }
+
+        }
     }
 }
