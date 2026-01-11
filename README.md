@@ -1,6 +1,6 @@
 # QuestGraphicsSettings
 A mod that brings some graphics settings to Quest devices.
-Most features are also useful for PC, but PC is untested. 
+Most features are also useful for low-end PC's, but PC is untested! 
 Last tested on Melonloader 0.6.5, BoneLab patch 6
 
 ## Current Features
@@ -8,6 +8,8 @@ Last tested on Melonloader 0.6.5, BoneLab patch 6
 - Texture Streaming Budget + Toggle
 - Fog Toggle
 - LOD Bias
+- Render Distance
+- Experimental Tweaks (Recommended to NOT use, only added so I can test them later. Will probably cause issues if enabled!)
 
 ## Discord Server
 Join the Discord server to chat, give suggestions, report issues, and get sneak peeks!
