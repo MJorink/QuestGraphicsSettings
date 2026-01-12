@@ -23,6 +23,11 @@ namespace QuestGraphicsSettings {
 
         private Camera playerCamera;
         private GameObject fogObject;
+
+        private GameObject testfogObject;
+        private float testfogdelay = 5f;
+        private float lasttesttime = 0f;
+        private int fogtestamount = 1;
         
         public override void OnInitializeMelon() {
             MelonPrefs();
@@ -32,9 +37,9 @@ namespace QuestGraphicsSettings {
         private void GraphicsMenu() {
             Page defaultPage = Page.Root.CreatePage("Quest Graphics Settings", Color.yellow);
             defaultPage.CreateBool("Fog", Color.green, FogEntry.Value, (a) => { FogEntry.Value = a; });
-            defaultPage.CreateFloat("Render Scale", Color.green, RenderScaleEntry.Value, 0.05f, 0.40f, 2.0f, (a) => { RenderScaleEntry.Value = a; });
+            defaultPage.CreateFloat("Render Scale", Color.green, RenderScaleEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { RenderScaleEntry.Value = a; });
             defaultPage.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 32f, 32f, 3072f, (a) => { TextureStreamingBudgetEntry.Value = a; });
-            defaultPage.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { LODBiasEntry.Value = a; });
+            defaultPage.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 3.0f, (a) => { LODBiasEntry.Value = a; });
             defaultPage.CreateFloat("Render Distance", Color.yellow, RenderDistanceEntry.Value, 5f, 5f, 150f, (a) => { RenderDistanceEntry.Value = a; });
             defaultPage.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
             
@@ -49,13 +54,13 @@ namespace QuestGraphicsSettings {
         private void MelonPrefs() {
             category = MelonPreferences.CreateCategory("QuestGraphicsSettings");
             FogEntry = category.CreateEntry("Fog Enabled", false);
-            RenderScaleEntry = category.CreateEntry("Render Scale", 0.9f);
+            RenderScaleEntry = category.CreateEntry("Render Scale", 0.85f);
             TextureStreamingEntry = category.CreateEntry("Texture Streaming Enabled", true);
-            TextureStreamingBudgetEntry = category.CreateEntry("Texture Streaming Budget", 256f);
-            LODBiasEntry = category.CreateEntry("LOD Bias", 0.90f);
+            TextureStreamingBudgetEntry = category.CreateEntry("Texture Streaming Budget", 192f);
+            LODBiasEntry = category.CreateEntry("LOD Bias", 0.85f);
             RenderDistanceEntry = category.CreateEntry("Render Distance", 85f);
-            ExperimentalEntry = category.CreateEntry("Experimental Tweaks", false);
-            LowPhysicsEntry = category.CreateEntry("Low Physics", false);
+            ExperimentalEntry = category.CreateEntry("Experimental Tweaks", true);
+            LowPhysicsEntry = category.CreateEntry("Low Physics", true);
             MelonPreferences.Save();
             category.SaveToFile();
         }
@@ -63,13 +68,14 @@ namespace QuestGraphicsSettings {
         private void Warning() {
              Menu.DisplayDialog(
             "WARNING",
-            "These settings are experimental and may cause instability or crashes. Proceed with caution!"
+            "These settings are experimental and minimally tested, and may cause bugs or crashes. Proceed with caution!"
             );
         }
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
             base.OnSceneWasLoaded(buildIndex, sceneName);
             ApplySettings();
+            fogtestamount = 1;
         }
 
         private void ApplySettings() {
@@ -87,8 +93,42 @@ namespace QuestGraphicsSettings {
             QualitySettings.lodBias = LODBiasEntry.Value;
         }
 
-        private void SetFog()
-        {
+        public override void OnUpdate() {
+            base.OnUpdate();
+            TestFog();
+        }
+
+        private void TestFog() {
+            // Repeat 3 times per scene load
+            if (fogtestamount > 3) {
+                return;
+            }
+
+            // 5 Second delay after each test.
+            testfogdelay = 5f;
+            lasttesttime = Time.time;
+
+            if (Time.time - lasttesttime < testfogdelay) {
+                return;
+            }
+
+            testfogObject = null;
+
+            testfogObject = GameObject.Find("Volumetrics");
+            testfogObject = GameObject.Find("Volumetric");
+            testfogObject = GameObject.Find("VolumetricFog");
+            testfogObject = GameObject.Find("Fog");
+            testfogObject = GameObject.Find("fog");
+
+            if (testfogObject != null) {
+                MelonLogger.Msg("Fog object found: " + testfogObject.name);
+            }
+
+            fogtestamount += 1;
+        }
+
+
+        private void SetFog() {
             if (fogObject == null)
             {
                 fogObject = GameObject.Find("Volumetrics");
@@ -100,8 +140,7 @@ namespace QuestGraphicsSettings {
             }
         }
 
-        private void SetRenderDistance()
-		{
+        private void SetRenderDistance() {
 			if ((UnityEngine.Object)(object)playerCamera == (UnityEngine.Object)null)
 			{
 				playerCamera = UnityEngine.Object.FindObjectOfType<Camera>();
@@ -113,8 +152,7 @@ namespace QuestGraphicsSettings {
 			playerCamera.useOcclusionCulling = true;
 		}
 
-        private void SetRenderScale()
-		{
+        private void SetRenderScale() {
 			UniversalRenderPipelineAsset asset = UniversalRenderPipeline.asset;
 			asset.renderScale = RenderScaleEntry.Value;
         }   
