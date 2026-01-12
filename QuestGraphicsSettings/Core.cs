@@ -4,8 +4,9 @@ using BoneLib.BoneMenu;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 
-[assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "1.1.1", "jorink")]
+[assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "1.1.2", "jorink")]
 [assembly: MelonGame("Stress Level Zero", "BONELAB")]
 
 namespace QuestGraphicsSettings {
@@ -23,6 +24,7 @@ namespace QuestGraphicsSettings {
 
         private Camera playerCamera;
         private GameObject fogObject;
+        private bool warnedMissingVolumetrics;
         
         public override void OnInitializeMelon() {
             MelonPrefs();
@@ -69,6 +71,8 @@ namespace QuestGraphicsSettings {
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
             base.OnSceneWasLoaded(buildIndex, sceneName);
+            fogObject = null;
+            warnedMissingVolumetrics = false;
             ApplySettings();
         }
 
@@ -96,7 +100,16 @@ namespace QuestGraphicsSettings {
             
             if (fogObject != null)
             {
+                warnedMissingVolumetrics = false;
                 fogObject.SetActive(FogEntry.Value);
+                return;
+            }
+
+            if (!warnedMissingVolumetrics)
+            {
+                warnedMissingVolumetrics = true;
+                string activeSceneName = SceneManager.GetActiveScene().name;
+                MelonLogger.Warning($"QuestGraphicsSettings: Fog object 'Volumetrics' was not found (scene='{activeSceneName}'). Fog toggle will have no effect for this scene.");
             }
         }
 

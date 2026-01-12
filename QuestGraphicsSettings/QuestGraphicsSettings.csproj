@@ -513,7 +513,6 @@
 		<Reference Include="Il2CppInterop.Common">
 			<HintPath>$(BONELAB_DIR)\MelonLoader\net6\Il2CppInterop.Common.dll</HintPath>
 		</Reference>
-
 	</ItemGroup>
 
 	<PropertyGroup>
