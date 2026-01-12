@@ -9,7 +9,11 @@ Last tested on Melonloader 0.6.5, BoneLab patch 6
 - Fog Toggle
 - LOD Bias
 - Render Distance
-- Experimental Tweaks (Recommended to NOT use, only added so I can test them later. Will probably cause issues if enabled!)
+- Low Physics toggle (Could give more performance) (Minimally tested, may cause issues!)
+- Experimental Performance Tweaks (Minimally tested, may cause visual bugs!)
+
+## Known bugs
+ThunderStoreModAssistant download bug should be fixed as of 1.1.2
 
 ## Discord Server
 Join the Discord server to chat, give suggestions, report issues, and get sneak peeks!
