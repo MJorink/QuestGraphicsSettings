@@ -1,6 +1,7 @@
 ﻿using MelonLoader;
 using MelonLoader.Preferences;
 using BoneLib.BoneMenu;
+using BoneLib.Notifications;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -28,6 +29,7 @@ namespace QuestGraphicsSettings {
         MelonPreferences_Entry<bool> ExperimentalEntry;
 
         // Preset Variables
+        private bool AutoPresetState;
         private string Preset;
         private int PresetFPS;
         private float PresetRenderScale;
@@ -47,7 +49,7 @@ namespace QuestGraphicsSettings {
         private float testfogdelay = 5f;
         private float lasttesttime = 0f;
         private int fogtestamount = 1;
-        private float presetdelay = 5f;
+        private float presetdelay = 2f;
         private float lastpresettime = 0f;
 
         public override void OnInitializeMelon() {
@@ -75,6 +77,10 @@ namespace QuestGraphicsSettings {
             presetsPage.CreateFunction("High", Color.red, () => { HighPreset(); ApplySettings(); });
             presetsPage.CreateFunction("Default", Color.blue, () => { DefaultPreset(); ApplySettings(); });
             presetsPage.CreateFunction("Custom", Color.cyan, () => { CustomPreset(); ApplySettings(); });
+
+            Page autopresetPage = presetsPage.CreatePage("Auto Preset (WIP)", Color.magenta);
+            autopresetPage.CreateFunction("Toggle Auto Preset", Color.cyan, () => { ToggleAutoPreset();});
+            autopresetPage.CreateInt("Target FPS", Color.green, FPSEntry.Value, 10, 10, 120, (a) => { FPSEntry.Value = a; });
 
             Page advancedPage = defaultPage.CreatePage("Advanced Settings", Color.red);
             advancedPage.CreateFunction("PRESS ME", Color.red, () => { AdvancedWarning(); });
@@ -115,7 +121,13 @@ namespace QuestGraphicsSettings {
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
             base.OnSceneWasLoaded(buildIndex, sceneName);
-            ApplySettings();
+            if (Preset == "Custom") {
+                ApplySettings();
+            }
+            else {
+                DefaultPreset();
+                ApplySettings();
+            }
             fogtestamount = 1;
         }
 
@@ -212,7 +224,6 @@ namespace QuestGraphicsSettings {
         private void CustomPreset() {
             Preset = "Custom";
         } 
-
         //
 
         public override void OnUpdate() {
@@ -221,8 +232,18 @@ namespace QuestGraphicsSettings {
             TestFog();   
         }
 
+        private void ToggleAutoPreset() {
+            AutoPresetState = !AutoPresetState;
+            if (AutoPresetState) {
+                DefaultPreset();
+                ApplySettings();
+            }
+        }
+
         private void AutoPreset() {
-            presetdelay = 5f;
+            if (!AutoPresetState) {
+                return;
+            }
 
             if (Time.time - lastpresettime < presetdelay) {
                 return;
@@ -230,8 +251,28 @@ namespace QuestGraphicsSettings {
             
             lastpresettime = Time.time;
 
+            // Performance Drop, Lower Preset
             if (OnDemandRendering.effectiveRenderFrameRate < FPSEntry.Value - 5) {
                 MelonLogger.Msg("Performance drop detected:" + OnDemandRendering.effectiveRenderFrameRate + "|" + FPSEntry.Value);
+
+                if (Preset == "VeryLow") {
+                    return;
+                }
+                else if (Preset == "Low") {
+                    VeryLowPreset();
+                }
+                else if (Preset == "Medium") {
+                    LowPreset();
+                }
+                else if (Preset == "Default") {
+                    MediumPreset();
+                }
+                else if (Preset == "High") {
+                    DefaultPreset();
+                }
+                else {
+                    MediumPreset();
+                }
             }
         }
 
@@ -393,8 +434,8 @@ namespace QuestGraphicsSettings {
                 QualitySettings.softVegetation = true;
                 QualitySettings.particleRaycastBudget = 512;
                 }}
+
             else {
-            // Experimental settings for performance research
             if (PresetExperimental) {
 				RenderSettings.defaultReflectionResolution = 16;
                 QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
@@ -403,7 +444,6 @@ namespace QuestGraphicsSettings {
                 QualitySettings.particleRaycastBudget = 0;
                 }
 
-            // Default BoneLab settings found by logging
             if (!PresetExperimental) {
                 RenderSettings.defaultReflectionResolution = 128;
                 QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
