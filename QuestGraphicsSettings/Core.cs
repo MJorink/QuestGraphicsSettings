@@ -31,7 +31,6 @@ namespace QuestGraphicsSettings {
         // Preset Variables
         private bool AutoPresetState;
         private string Preset;
-        private int PresetFPS;
         private float PresetRenderScale;
         private float PresetRenderDistance;
         private float PresetLODBias;        
@@ -44,13 +43,13 @@ namespace QuestGraphicsSettings {
         // Other Variables
         private Camera playerCamera;
         private GameObject fogObject;
-        private GameObject testfogObject;
 
-        private float testfogdelay = 5f;
-        private float lasttesttime = 0f;
-        private int fogtestamount = 1;
-        private float presetdelay = 2f;
+        private float presetdelay = 5f;
         private float lastpresettime = 0f;
+
+        // FPS tracking
+        private float[] frameTimeSamples = new float[30];
+        private int frameIndex = 0;
 
         public override void OnInitializeMelon() {
             SetupMelonPreferences();
@@ -60,7 +59,6 @@ namespace QuestGraphicsSettings {
 
         private void SetupBoneMenu() {
             Page defaultPage = Page.Root.CreatePage("QuestGraphicsSettings", Color.yellow);
-            defaultPage.CreateInt("Target FPS", Color.green, FPSEntry.Value, 10, 10, 120, (a) => { FPSEntry.Value = a; });
             defaultPage.CreateFloat("Render Scale", Color.green, RenderScaleEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { RenderScaleEntry.Value = a; });
             defaultPage.CreateFloat("Render Distance", Color.yellow, RenderDistanceEntry.Value, 5f, 5f, 150f, (a) => { RenderDistanceEntry.Value = a; });
             defaultPage.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 3.0f, (a) => { LODBiasEntry.Value = a; });
@@ -80,7 +78,7 @@ namespace QuestGraphicsSettings {
 
             Page autopresetPage = presetsPage.CreatePage("Auto Preset (WIP)", Color.magenta);
             autopresetPage.CreateFunction("Toggle Auto Preset", Color.cyan, () => { ToggleAutoPreset();});
-            autopresetPage.CreateInt("Target FPS", Color.green, FPSEntry.Value, 10, 10, 120, (a) => { FPSEntry.Value = a; });
+            autopresetPage.CreateInt("Target FPS", Color.green, FPSEntry.Value, 10, 60, 120, (a) => { FPSEntry.Value = a; });
 
             Page advancedPage = defaultPage.CreatePage("Advanced Settings", Color.red);
             advancedPage.CreateFunction("PRESS ME", Color.red, () => { AdvancedWarning(); });
@@ -128,11 +126,9 @@ namespace QuestGraphicsSettings {
                 DefaultPreset();
                 ApplySettings();
             }
-            fogtestamount = 1;
         }
 
         private void ApplySettings() {
-            SetFPS();
             SetPhysics();
             SetTextureStreaming();
             SetRenderScale();
@@ -145,7 +141,6 @@ namespace QuestGraphicsSettings {
         // Presets
         private void VeryLowPreset() {
             Preset = "VeryLow";
-            PresetFPS = 90;
             PresetFog = false;
             PresetRenderScale = 0.6f;
             PresetTextureStreaming = true;
@@ -158,7 +153,6 @@ namespace QuestGraphicsSettings {
 
         private void LowPreset() {
             Preset = "Low";
-            PresetFPS = 90;
             PresetFog = false;
             PresetRenderScale = 0.8f;
             PresetTextureStreaming = true;
@@ -171,7 +165,6 @@ namespace QuestGraphicsSettings {
 
         private void MediumPreset() {
             Preset = "Medium";
-            PresetFPS = 90;
             PresetFog = false;
             PresetRenderScale = 1.0f;
             PresetTextureStreaming = true;
@@ -184,7 +177,6 @@ namespace QuestGraphicsSettings {
 
         private void HighPreset() {
             Preset = "High";
-            PresetFPS = 90;
             PresetFog = true;
             PresetRenderScale = 1.2f;
             PresetTextureStreaming = true;
@@ -197,7 +189,6 @@ namespace QuestGraphicsSettings {
         
         private void JorinksPreset() {
             Preset = "Jorink";
-            PresetFPS = 90;
             PresetFog = false;
             PresetRenderScale = 0.85f;
             PresetTextureStreaming = true;
@@ -210,7 +201,6 @@ namespace QuestGraphicsSettings {
 
         private void DefaultPreset() {
             Preset = "Default";
-            PresetFPS = 90;
             PresetFog = true;
             PresetRenderScale = 1.0f;
             PresetTextureStreaming = true;
@@ -227,9 +217,20 @@ namespace QuestGraphicsSettings {
         //
 
         public override void OnUpdate() {
-            base.OnUpdate();
+            // Track frame times
+            frameTimeSamples[frameIndex] = Time.unscaledDeltaTime;
+            frameIndex = (frameIndex + 1) % frameTimeSamples.Length;
+            
             AutoPreset();
-            TestFog();   
+        }
+
+        private float GetAverageFPS() {
+            float total = 0f;
+            for (int i = 0; i < frameTimeSamples.Length; i++) {
+                total += frameTimeSamples[i];
+            }
+            float avgDeltaTime = total / frameTimeSamples.Length;
+            return avgDeltaTime > 0 ? 1f / avgDeltaTime : 0f;
         }
 
         private void ToggleAutoPreset() {
@@ -238,6 +239,15 @@ namespace QuestGraphicsSettings {
                 DefaultPreset();
                 ApplySettings();
             }
+
+            var notif = new Notification {
+                Title = "Auto Preset",
+                Message = AutoPresetState ? "Enabled" : "Disabled",
+                Type = AutoPresetState ? NotificationType.Success : NotificationType.Warning,
+                PopupLength = 2f,
+                ShowTitleOnPopup = true
+            };
+            Notifier.Send(notif);
         }
 
         private void AutoPreset() {
@@ -249,11 +259,13 @@ namespace QuestGraphicsSettings {
                 return;
             }
             
+            float currentFPS = GetAverageFPS();
+            MelonLogger.Msg("Auto Preset Checking FPS:" + currentFPS + "|" + FPSEntry.Value);
             lastpresettime = Time.time;
 
             // Performance Drop, Lower Preset
-            if (OnDemandRendering.effectiveRenderFrameRate < FPSEntry.Value - 5) {
-                MelonLogger.Msg("Performance drop detected:" + OnDemandRendering.effectiveRenderFrameRate + "|" + FPSEntry.Value);
+            if (currentFPS < FPSEntry.Value - 5) {
+                MelonLogger.Msg("Performance drop detected");
 
                 if (Preset == "VeryLow") {
                     return;
@@ -276,39 +288,6 @@ namespace QuestGraphicsSettings {
             }
         }
 
-        private void TestFog() {
-            // Repeat 3 times per scene load
-            if (fogtestamount > 3) {
-                return;
-            }
-
-            // 5 Second delay after each test.
-            if (Time.time - lasttesttime < testfogdelay) {
-                return;
-            }
-
-            lasttesttime = Time.time;
-            testfogObject = null;
-
-            // Try to find fog objects, keep first match found
-            testfogObject = GameObject.Find("Volumetrics");
-            if (testfogObject == null) testfogObject = GameObject.Find("Volumetric");
-            if (testfogObject == null) testfogObject = GameObject.Find("VolumetricFog");
-            if (testfogObject == null) testfogObject = GameObject.Find("Fog");
-            if (testfogObject == null) testfogObject = GameObject.Find("fog");
-
-            if (testfogObject != null) {
-                MelonLogger.Msg("Fog object found: " + testfogObject.name + " Scene: " + SceneManager.GetActiveScene().name);
-            }
-            else {
-                MelonLogger.Msg("No fog object found in scene: " + SceneManager.GetActiveScene().name + ".");
-            }
-
-            fogtestamount += 1;
-        }
-
-
-
         private void SetTextureStreaming() {
             if (Preset == "Custom") {
             QualitySettings.streamingMipmapsActive = TextureStreamingEntry.Value;
@@ -329,26 +308,18 @@ namespace QuestGraphicsSettings {
             }
         }
 
-        private void SetFPS() {
-            QualitySettings.vSyncCount = 0;
-            if (Preset == "Custom") {
-            Application.targetFrameRate = FPSEntry.Value;
-            Time.fixedDeltaTime = 1f / FPSEntry.Value;
-            }
-            else {
-            Application.targetFrameRate = PresetFPS;
-            Time.fixedDeltaTime = 1f / PresetFPS;
-            }
-        }
-
         private void SetFog() {
-            if (fogObject == null)
-            {
-                fogObject = GameObject.Find("Volumetrics");
-            }
+            if (fogObject == null) fogObject = GameObject.Find("Volumetrics");
+            if (fogObject == null) fogObject = GameObject.Find("Volumetric");
+            if (fogObject == null) fogObject = GameObject.Find("VolumetricFog");
+            if (fogObject == null) fogObject = GameObject.Find("Fog");
+            if (fogObject == null) fogObject = GameObject.Find("fog");
+            if (fogObject == null) MelonLogger.Msg("No fog object found in scene: " + SceneManager.GetActiveScene().name);
+            
             
             if (fogObject != null)
             {
+                MelonLogger.Msg("Fog Object Found: " + fogObject.name + " Scene:" + SceneManager.GetActiveScene().name);
                 if (Preset == "Custom")
                 {
                     fogObject.SetActive(FogEntry.Value);
