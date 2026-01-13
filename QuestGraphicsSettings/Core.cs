@@ -27,6 +27,19 @@ namespace QuestGraphicsSettings {
         MelonPreferences_Entry<bool> LowPhysicsEntry;
         MelonPreferences_Entry<bool> ExperimentalEntry;
 
+        // Preset Variables
+        private string Preset;
+        private int PresetFPS;
+        private float PresetRenderScale;
+        private float PresetRenderDistance;
+        private float PresetLODBias;        
+        private float PresetTextureStreamingBudget;
+        private bool PresetFog;
+        private bool PresetTextureStreaming;
+        private bool PresetLowPhysics;
+        private bool PresetExperimental;
+
+        // Other Variables
         private Camera playerCamera;
         private GameObject fogObject;
         private GameObject testfogObject;
@@ -35,11 +48,12 @@ namespace QuestGraphicsSettings {
         private float lasttesttime = 0f;
         private int fogtestamount = 1;
         private float presetdelay = 5f;
-        private float lastpresettime = 0f;        
+        private float lastpresettime = 0f;
 
         public override void OnInitializeMelon() {
             SetupMelonPreferences();
             SetupBoneMenu();
+            Preset = "Custom";
         }
 
         private void SetupBoneMenu() {
@@ -59,7 +73,8 @@ namespace QuestGraphicsSettings {
             presetsPage.CreateFunction("Low", Color.green, () => { LowPreset(); ApplySettings(); });
             presetsPage.CreateFunction("Medium", Color.yellow, () => { MediumPreset(); ApplySettings(); });
             presetsPage.CreateFunction("High", Color.red, () => { HighPreset(); ApplySettings(); });
-            presetsPage.CreateFunction("Reset to Defaults", Color.cyan, () => { DefaultPreset(); ApplySettings(); });
+            presetsPage.CreateFunction("Default", Color.blue, () => { DefaultPreset(); ApplySettings(); });
+            presetsPage.CreateFunction("Custom", Color.cyan, () => { CustomPreset(); ApplySettings(); });
 
             Page advancedPage = defaultPage.CreatePage("Advanced Settings", Color.red);
             advancedPage.CreateFunction("PRESS ME", Color.red, () => { AdvancedWarning(); });
@@ -94,7 +109,7 @@ namespace QuestGraphicsSettings {
         private void PresetsWarning() {
              Menu.DisplayDialog(
             "WARNING",
-            "Some presets also use experimental options, these settings are experimental and minimally tested, and may cause bugs or crashes. Proceed with caution!"
+            "Some presets also use experimental options, these settings are experimental and minimally tested, and may cause bugs or crashes. Proceed with caution! Preset Custom will disable presets and use your own settings in the normal menu."
             );
         }
 
@@ -117,87 +132,88 @@ namespace QuestGraphicsSettings {
 
         // Presets
         private void VeryLowPreset() {
-            FogEntry.Value = false;
-            RenderScaleEntry.Value = 0.6f;
-            TextureStreamingEntry.Value = true;
-            TextureStreamingBudgetEntry.Value = 64f;
-            LODBiasEntry.Value = 0.5f;
-            RenderDistanceEntry.Value = 50f;
-            LowPhysicsEntry.Value = true;
-            ExperimentalEntry.Value = true;
+            Preset = "VeryLow";
+            PresetFPS = 90;
+            PresetFog = false;
+            PresetRenderScale = 0.6f;
+            PresetTextureStreaming = true;
+            PresetTextureStreamingBudget = 64f;
+            PresetLODBias = 0.5f;
+            PresetRenderDistance = 50f;
+            PresetLowPhysics = true;
+            PresetExperimental = true;
         }
 
         private void LowPreset() {
-            FogEntry.Value = false;
-            RenderScaleEntry.Value = 0.8f;
-            TextureStreamingEntry.Value = true;
-            TextureStreamingBudgetEntry.Value = 128f;
-            LODBiasEntry.Value = 0.7f;
-            RenderDistanceEntry.Value = 70f;
-            LowPhysicsEntry.Value = true;
-            ExperimentalEntry.Value = true;
+            Preset = "Low";
+            PresetFPS = 90;
+            PresetFog = false;
+            PresetRenderScale = 0.8f;
+            PresetTextureStreaming = true;
+            PresetTextureStreamingBudget = 128f;
+            PresetLODBias = 0.7f;
+            PresetRenderDistance = 70f;
+            PresetLowPhysics = true;
+            PresetExperimental = true;
         }
 
         private void MediumPreset() {
-            FogEntry.Value = false;
-            RenderScaleEntry.Value = 1.0f;
-            TextureStreamingEntry.Value = true;
-            TextureStreamingBudgetEntry.Value = 256f;
-            LODBiasEntry.Value = 0.8f;
-            RenderDistanceEntry.Value = 80f;
-            LowPhysicsEntry.Value = false;
-            ExperimentalEntry.Value = true;
+            Preset = "Medium";
+            PresetFPS = 90;
+            PresetFog = false;
+            PresetRenderScale = 1.0f;
+            PresetTextureStreaming = true;
+            PresetTextureStreamingBudget = 256f;
+            PresetLODBias = 0.8f;
+            PresetRenderDistance = 80f;
+            PresetLowPhysics = false;
+            PresetExperimental = true;
         }
 
         private void HighPreset() {
-            FogEntry.Value = true;
-            RenderScaleEntry.Value = 1.2f;
-            TextureStreamingEntry.Value = true;
-            TextureStreamingBudgetEntry.Value = 512f;
-            LODBiasEntry.Value = 1.25f;
-            RenderDistanceEntry.Value = 100f;
-            LowPhysicsEntry.Value = false;
-            ExperimentalEntry.Value = false;
+            Preset = "High";
+            PresetFPS = 90;
+            PresetFog = true;
+            PresetRenderScale = 1.2f;
+            PresetTextureStreaming = true;
+            PresetTextureStreamingBudget = 512f;
+            PresetLODBias = 1.25f;
+            PresetRenderDistance = 100f;
+            PresetLowPhysics = false;
+            PresetExperimental = false;
         }
         
         private void JorinksPreset() {
-            FogEntry.Value = false;
-            RenderScaleEntry.Value = 0.85f;
-            TextureStreamingEntry.Value = true;
-            TextureStreamingBudgetEntry.Value = 256f;
-            LODBiasEntry.Value = 0.85f;
-            RenderDistanceEntry.Value = 85f;
-            LowPhysicsEntry.Value = true;
-            ExperimentalEntry.Value = true;
+            Preset = "Jorink";
+            PresetFPS = 90;
+            PresetFog = false;
+            PresetRenderScale = 0.85f;
+            PresetTextureStreaming = true;
+            PresetTextureStreamingBudget = 256f;
+            PresetLODBias = 0.85f;
+            PresetRenderDistance = 85f;
+            PresetLowPhysics = true;
+            PresetExperimental = true;
         }     
 
         private void DefaultPreset() {
-            FogEntry.Value = true;
-            RenderScaleEntry.Value = 1.0f;
-            TextureStreamingEntry.Value = true;
-            TextureStreamingBudgetEntry.Value = 512f;
-            LODBiasEntry.Value = 1f;
-            RenderDistanceEntry.Value = 90f;
-            LowPhysicsEntry.Value = false;
-            ExperimentalEntry.Value = false;
+            Preset = "Default";
+            PresetFPS = 90;
+            PresetFog = true;
+            PresetRenderScale = 1.0f;
+            PresetTextureStreaming = true;
+            PresetTextureStreamingBudget = 512f;
+            PresetLODBias = 1f;
+            PresetRenderDistance = 90f;
+            PresetLowPhysics = false;
+            PresetExperimental = false;
         }  
+
+        private void CustomPreset() {
+            Preset = "Custom";
+        } 
+
         //
-        
-
-        private void SetTextureStreaming() {
-            QualitySettings.streamingMipmapsActive = TextureStreamingEntry.Value;
-            QualitySettings.streamingMipmapsMemoryBudget = TextureStreamingBudgetEntry.Value;
-        }
-
-        private void SetLODBias() {
-            QualitySettings.lodBias = LODBiasEntry.Value;
-        }
-
-        private void SetFPS() {
-            QualitySettings.vSyncCount = 0;
-            Application.targetFrameRate = FPSEntry.Value;
-            Time.fixedDeltaTime = 1f / FPSEntry.Value;
-        }
 
         public override void OnUpdate() {
             base.OnUpdate();
@@ -207,11 +223,12 @@ namespace QuestGraphicsSettings {
 
         private void AutoPreset() {
             presetdelay = 5f;
-            lastpresettime = Time.time;
 
             if (Time.time - lastpresettime < presetdelay) {
                 return;
             }
+            
+            lastpresettime = Time.time;
 
             if (OnDemandRendering.effectiveRenderFrameRate < FPSEntry.Value - 5) {
                 MelonLogger.Msg("Performance drop detected:" + OnDemandRendering.effectiveRenderFrameRate + "|" + FPSEntry.Value);
@@ -225,29 +242,62 @@ namespace QuestGraphicsSettings {
             }
 
             // 5 Second delay after each test.
-            testfogdelay = 5f;
-            lasttesttime = Time.time;
-
             if (Time.time - lasttesttime < testfogdelay) {
                 return;
             }
 
+            lasttesttime = Time.time;
             testfogObject = null;
 
+            // Try to find fog objects, keep first match found
             testfogObject = GameObject.Find("Volumetrics");
-            testfogObject = GameObject.Find("Volumetric");
-            testfogObject = GameObject.Find("VolumetricFog");
-            testfogObject = GameObject.Find("Fog");
-            testfogObject = GameObject.Find("fog");
+            if (testfogObject == null) testfogObject = GameObject.Find("Volumetric");
+            if (testfogObject == null) testfogObject = GameObject.Find("VolumetricFog");
+            if (testfogObject == null) testfogObject = GameObject.Find("Fog");
+            if (testfogObject == null) testfogObject = GameObject.Find("fog");
 
             if (testfogObject != null) {
-                MelonLogger.Msg("Fog object found: " + testfogObject.name);
+                MelonLogger.Msg("Fog object found: " + testfogObject.name + " Scene: " + SceneManager.GetActiveScene().name);
             }
             else {
-                MelonLogger.Msg("No fog object found in " + UnityEngine.SceneManagement.SceneManager.GetActiveScene().name + ".");
+                MelonLogger.Msg("No fog object found in scene: " + SceneManager.GetActiveScene().name + ".");
             }
 
             fogtestamount += 1;
+        }
+
+
+
+        private void SetTextureStreaming() {
+            if (Preset == "Custom") {
+            QualitySettings.streamingMipmapsActive = TextureStreamingEntry.Value;
+            QualitySettings.streamingMipmapsMemoryBudget = TextureStreamingBudgetEntry.Value;        
+            }
+            else {
+            QualitySettings.streamingMipmapsActive = PresetTextureStreaming;
+            QualitySettings.streamingMipmapsMemoryBudget = PresetTextureStreamingBudget;        
+            }          
+        }
+
+        private void SetLODBias() {
+            if (Preset == "Custom") {
+            QualitySettings.lodBias = LODBiasEntry.Value;
+            }
+            else {
+            QualitySettings.lodBias = PresetLODBias;
+            }
+        }
+
+        private void SetFPS() {
+            QualitySettings.vSyncCount = 0;
+            if (Preset == "Custom") {
+            Application.targetFrameRate = FPSEntry.Value;
+            Time.fixedDeltaTime = 1f / FPSEntry.Value;
+            }
+            else {
+            Application.targetFrameRate = PresetFPS;
+            Time.fixedDeltaTime = 1f / PresetFPS;
+            }
         }
 
         private void SetFog() {
@@ -258,7 +308,14 @@ namespace QuestGraphicsSettings {
             
             if (fogObject != null)
             {
-                fogObject.SetActive(FogEntry.Value);
+                if (Preset == "Custom")
+                {
+                    fogObject.SetActive(FogEntry.Value);
+                }
+                else
+                {
+                    fogObject.SetActive(PresetFog);
+                }
             }
         }
 
@@ -269,34 +326,56 @@ namespace QuestGraphicsSettings {
 			}
 			if ((UnityEngine.Object)(object)playerCamera != (UnityEngine.Object)null)
 			{
-				playerCamera.farClipPlane = RenderDistanceEntry.Value;
+                if (Preset == "Custom") {
+                    playerCamera.farClipPlane = RenderDistanceEntry.Value; }
+                else {
+				    playerCamera.farClipPlane = PresetRenderDistance; }
 			}
 			playerCamera.useOcclusionCulling = true;
 		}
 
         private void SetRenderScale() {
 			UniversalRenderPipelineAsset asset = UniversalRenderPipeline.asset;
-			asset.renderScale = RenderScaleEntry.Value;
+            if (Preset == "Custom") {
+            asset.renderScale = RenderScaleEntry.Value; }
+            else {
+            asset.renderScale = PresetRenderScale; }
         }   
 
         private void SetPhysics() {
+            if (Preset == "Custom") {
             if (LowPhysicsEntry.Value) {
                 Physics.defaultSolverIterations = 1;
                 Physics.defaultSolverVelocityIterations = 1;
                 Physics.sleepThreshold = 0.04f;
                 Physics.defaultContactOffset = 0.01f;
             }
-
-            // Default BoneLab settings found by logging
+            
             if (!LowPhysicsEntry.Value) {
                 Physics.defaultSolverIterations = 6;
                 Physics.defaultSolverVelocityIterations = 2;
                 Physics.sleepThreshold = 0.01f;
                 Physics.defaultContactOffset = 0.0055f;
+            }}
+
+            else {
+            if (PresetLowPhysics) {
+                Physics.defaultSolverIterations = 1;
+                Physics.defaultSolverVelocityIterations = 1;
+                Physics.sleepThreshold = 0.04f;
+                Physics.defaultContactOffset = 0.01f;
             }
+
+            if (!PresetLowPhysics) {
+                Physics.defaultSolverIterations = 6;
+                Physics.defaultSolverVelocityIterations = 2;
+                Physics.sleepThreshold = 0.01f;
+                Physics.defaultContactOffset = 0.0055f;
+            }}
         }
 
         private void SetExperimental() {
+            if (Preset == "Custom") {
             // Experimental settings for performance research
             if (ExperimentalEntry.Value) {
 				RenderSettings.defaultReflectionResolution = 16;
@@ -313,7 +392,26 @@ namespace QuestGraphicsSettings {
                 QualitySettings.pixelLightCount = 99;
                 QualitySettings.softVegetation = true;
                 QualitySettings.particleRaycastBudget = 512;
+                }}
+            else {
+            // Experimental settings for performance research
+            if (PresetExperimental) {
+				RenderSettings.defaultReflectionResolution = 16;
+                QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
+                QualitySettings.pixelLightCount = 0;
+                QualitySettings.softVegetation = false;
+                QualitySettings.particleRaycastBudget = 0;
                 }
+
+            // Default BoneLab settings found by logging
+            if (!PresetExperimental) {
+                RenderSettings.defaultReflectionResolution = 128;
+                QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
+                QualitySettings.pixelLightCount = 99;
+                QualitySettings.softVegetation = true;
+                QualitySettings.particleRaycastBudget = 512;
+                }
+            }
         }
     }
 }
