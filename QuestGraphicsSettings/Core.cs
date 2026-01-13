@@ -39,6 +39,7 @@ namespace QuestGraphicsSettings {
         private bool PresetTextureStreaming;
         private bool PresetLowPhysics;
         private bool PresetExperimental;
+        private int PerformanceDrops;
 
         // Other Variables
         private Camera playerCamera;
@@ -65,6 +66,7 @@ namespace QuestGraphicsSettings {
             defaultPage.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 32f, 32f, 3072f, (a) => { TextureStreamingBudgetEntry.Value = a; });
             defaultPage.CreateBool("Fog", Color.green, FogEntry.Value, (a) => { FogEntry.Value = a; });
             defaultPage.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
+            defaultPage.CreateFunction("Save Settings", Color.cyan, () => { MelonPreferences.Save(); });
 
             Page presetsPage = defaultPage.CreatePage("Presets", Color.magenta);
             presetsPage.CreateFunction("PRESS ME", Color.red, () => { PresetsWarning(); });
@@ -119,11 +121,12 @@ namespace QuestGraphicsSettings {
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
             base.OnSceneWasLoaded(buildIndex, sceneName);
-            if (Preset == "Custom") {
+            if (AutoPresetState) {
+                DefaultPreset();
                 ApplySettings();
+                PerformanceDrops = 0;
             }
             else {
-                DefaultPreset();
                 ApplySettings();
             }
         }
@@ -177,10 +180,10 @@ namespace QuestGraphicsSettings {
 
         private void HighPreset() {
             Preset = "High";
-            PresetFog = true;
-            PresetRenderScale = 1.2f;
+            PresetFog = false;
+            PresetRenderScale = 1.5f;
             PresetTextureStreaming = true;
-            PresetTextureStreamingBudget = 512f;
+            PresetTextureStreamingBudget = 256f;
             PresetLODBias = 1.25f;
             PresetRenderDistance = 100f;
             PresetLowPhysics = false;
@@ -190,7 +193,7 @@ namespace QuestGraphicsSettings {
         private void JorinksPreset() {
             Preset = "Jorink";
             PresetFog = false;
-            PresetRenderScale = 0.85f;
+            PresetRenderScale = 0.9f;
             PresetTextureStreaming = true;
             PresetTextureStreamingBudget = 256f;
             PresetLODBias = 0.85f;
@@ -201,10 +204,10 @@ namespace QuestGraphicsSettings {
 
         private void DefaultPreset() {
             Preset = "Default";
-            PresetFog = true;
+            PresetFog = false;
             PresetRenderScale = 1.0f;
             PresetTextureStreaming = true;
-            PresetTextureStreamingBudget = 512f;
+            PresetTextureStreamingBudget = 256f;
             PresetLODBias = 1f;
             PresetRenderDistance = 90f;
             PresetLowPhysics = false;
@@ -217,10 +220,10 @@ namespace QuestGraphicsSettings {
         //
 
         public override void OnUpdate() {
+            base.OnUpdate();
             // Track frame times
             frameTimeSamples[frameIndex] = Time.unscaledDeltaTime;
             frameIndex = (frameIndex + 1) % frameTimeSamples.Length;
-            
             AutoPreset();
         }
 
@@ -260,33 +263,44 @@ namespace QuestGraphicsSettings {
             }
             
             float currentFPS = GetAverageFPS();
-            MelonLogger.Msg("Auto Preset Checking FPS:" + currentFPS + "|" + FPSEntry.Value);
             lastpresettime = Time.time;
 
             // Performance Drop, Lower Preset
-            if (currentFPS < FPSEntry.Value - 5) {
-                MelonLogger.Msg("Performance drop detected");
+            if (currentFPS < FPSEntry.Value - 10) {
+                
+                PerformanceDrops += 1;
+    
+                MelonLogger.Msg("Performance drop detected " + PerformanceDrops + "/3");
+                MelonLogger.Msg("Performance drop FPS:" + currentFPS + "|" + FPSEntry.Value);
 
+                if (PerformanceDrops >= 3) {
+                PerformanceDrops = 0;
                 if (Preset == "VeryLow") {
                     return;
                 }
                 else if (Preset == "Low") {
                     VeryLowPreset();
+                    ApplySettings();
                 }
                 else if (Preset == "Medium") {
                     LowPreset();
+                    ApplySettings();
                 }
                 else if (Preset == "Default") {
                     MediumPreset();
+                    ApplySettings();
                 }
                 else if (Preset == "High") {
                     DefaultPreset();
+                    ApplySettings();
                 }
                 else {
                     MediumPreset();
+                    ApplySettings();
                 }
             }
-        }
+            }}
+        
 
         private void SetTextureStreaming() {
             if (Preset == "Custom") {
