@@ -9,8 +9,11 @@ Last tested on Melonloader 0.6.5, BoneLab patch 6
 - Fog Toggle
 - LOD Bias
 - Render Distance
-- Low Physics toggle (Minimally tested, may cause issues!)
-- Experimental Performance Tweaks (Minimally tested, may cause visual bugs!)
+- Low Physics toggle
+- Experimental Performance Tweaks
+- Presets
+- Automatic Preset Switching based on FPS (only lowering for now.)
+- Target fps for automatic preset switching
 
 ## Discord Server
 Join the Discord server to chat, give suggestions, report issues, and get sneak peeks!

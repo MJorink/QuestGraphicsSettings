@@ -7,7 +7,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
-[assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "1.1.2", "jorink")]
+[assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "1.2.0", "jorink")]
 [assembly: MelonGame("Stress Level Zero", "BONELAB")]
 
 namespace QuestGraphicsSettings {
@@ -60,15 +60,18 @@ namespace QuestGraphicsSettings {
 
         private void SetupBoneMenu() {
             Page defaultPage = Page.Root.CreatePage("QuestGraphicsSettings", Color.yellow);
-            defaultPage.CreateFloat("Render Scale", Color.green, RenderScaleEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { RenderScaleEntry.Value = a; });
-            defaultPage.CreateFloat("Render Distance", Color.yellow, RenderDistanceEntry.Value, 5f, 5f, 150f, (a) => { RenderDistanceEntry.Value = a; });
-            defaultPage.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 3.0f, (a) => { LODBiasEntry.Value = a; });
-            defaultPage.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 32f, 32f, 3072f, (a) => { TextureStreamingBudgetEntry.Value = a; });
-            defaultPage.CreateBool("Fog", Color.green, FogEntry.Value, (a) => { FogEntry.Value = a; });
-            defaultPage.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
-            defaultPage.CreateFunction("Save Settings", Color.cyan, () => { MelonPreferences.Save(); });
 
-            Page presetsPage = defaultPage.CreatePage("Presets", Color.magenta);
+            Page customPage = defaultPage.CreatePage("Custom Preset Settings", Color.cyan);
+            customPage.CreateFloat("Render Scale", Color.green, RenderScaleEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { RenderScaleEntry.Value = a; });
+            customPage.CreateFloat("Render Distance", Color.yellow, RenderDistanceEntry.Value, 5f, 5f, 150f, (a) => { RenderDistanceEntry.Value = a; });
+            customPage.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 3.0f, (a) => { LODBiasEntry.Value = a; });
+            customPage.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 32f, 32f, 3072f, (a) => { TextureStreamingBudgetEntry.Value = a; });
+            customPage.CreateBool("Fog", Color.green, FogEntry.Value, (a) => { FogEntry.Value = a; });
+            customPage.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
+            customPage.CreateFunction("Save Settings", Color.cyan, () => { MelonPreferences.Save(); });
+            customPage.CreateFunction("Enable Custom Preset", Color.cyan, () => { CustomPreset(); ApplySettings(); });
+
+            Page presetsPage = defaultPage.CreatePage("Presets", Color.blue);
             presetsPage.CreateFunction("PRESS ME", Color.red, () => { PresetsWarning(); });
             presetsPage.CreateFunction("Jorink's Preset", Color.magenta, () => { JorinksPreset(); ApplySettings(); });
             presetsPage.CreateFunction("Very Low", Color.green, () => { VeryLowPreset(); ApplySettings(); });
@@ -77,12 +80,14 @@ namespace QuestGraphicsSettings {
             presetsPage.CreateFunction("High", Color.red, () => { HighPreset(); ApplySettings(); });
             presetsPage.CreateFunction("Default", Color.blue, () => { DefaultPreset(); ApplySettings(); });
             presetsPage.CreateFunction("Custom", Color.cyan, () => { CustomPreset(); ApplySettings(); });
+            presetsPage.CreateFunction("Current Preset", Color.cyan, () => { CurrentPreset();});
 
-            Page autopresetPage = presetsPage.CreatePage("Auto Preset (WIP)", Color.magenta);
+            Page autopresetPage = defaultPage.CreatePage("Auto Preset (WIP)", Color.magenta);
             autopresetPage.CreateFunction("Toggle Auto Preset", Color.cyan, () => { ToggleAutoPreset();});
             autopresetPage.CreateInt("Target FPS", Color.green, FPSEntry.Value, 10, 60, 120, (a) => { FPSEntry.Value = a; });
+            autopresetPage.CreateFunction("Current Preset", Color.cyan, () => { CurrentPreset();});
 
-            Page advancedPage = defaultPage.CreatePage("Advanced Settings", Color.red);
+            Page advancedPage = customPage.CreatePage("Advanced Settings", Color.red);
             advancedPage.CreateFunction("PRESS ME", Color.red, () => { AdvancedWarning(); });
             advancedPage.CreateBool("Texture Streaming (!)", Color.red, TextureStreamingEntry.Value, (a) => { TextureStreamingEntry.Value = a; });
             advancedPage.CreateBool("Low Physics (!)", Color.red, LowPhysicsEntry.Value, (a) => { LowPhysicsEntry.Value = a; });
@@ -217,6 +222,17 @@ namespace QuestGraphicsSettings {
         private void CustomPreset() {
             Preset = "Custom";
         } 
+
+        private void CurrentPreset() {
+            var notif = new Notification {
+                Title = "Current Preset",
+                Message = Preset,
+                Type = NotificationType.Success,
+                PopupLength = 2f,
+                ShowTitleOnPopup = true
+            };
+            Notifier.Send(notif);
+        }
         //
 
         public override void OnUpdate() {
