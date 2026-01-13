@@ -115,9 +115,10 @@ namespace QuestGraphicsSettings {
             SetFog();
         }
 
+        // Presets
         private void VeryLowPreset() {
             FogEntry.Value = false;
-            RenderScaleEntry.Value = 0.5f;
+            RenderScaleEntry.Value = 0.6f;
             TextureStreamingEntry.Value = true;
             TextureStreamingBudgetEntry.Value = 64f;
             LODBiasEntry.Value = 0.5f;
@@ -128,7 +129,7 @@ namespace QuestGraphicsSettings {
 
         private void LowPreset() {
             FogEntry.Value = false;
-            RenderScaleEntry.Value = 0.7f;
+            RenderScaleEntry.Value = 0.8f;
             TextureStreamingEntry.Value = true;
             TextureStreamingBudgetEntry.Value = 128f;
             LODBiasEntry.Value = 0.7f;
@@ -139,7 +140,7 @@ namespace QuestGraphicsSettings {
 
         private void MediumPreset() {
             FogEntry.Value = false;
-            RenderScaleEntry.Value = 0.8f;
+            RenderScaleEntry.Value = 1.0f;
             TextureStreamingEntry.Value = true;
             TextureStreamingBudgetEntry.Value = 256f;
             LODBiasEntry.Value = 0.8f;
@@ -150,11 +151,11 @@ namespace QuestGraphicsSettings {
 
         private void HighPreset() {
             FogEntry.Value = true;
-            RenderScaleEntry.Value = 1.0f;
+            RenderScaleEntry.Value = 1.2f;
             TextureStreamingEntry.Value = true;
             TextureStreamingBudgetEntry.Value = 512f;
-            LODBiasEntry.Value = 1.0f;
-            RenderDistanceEntry.Value = 85f;
+            LODBiasEntry.Value = 1.25f;
+            RenderDistanceEntry.Value = 100f;
             LowPhysicsEntry.Value = false;
             ExperimentalEntry.Value = false;
         }
@@ -180,6 +181,8 @@ namespace QuestGraphicsSettings {
             LowPhysicsEntry.Value = false;
             ExperimentalEntry.Value = false;
         }  
+        //
+        
 
         private void SetTextureStreaming() {
             QualitySettings.streamingMipmapsActive = TextureStreamingEntry.Value;
