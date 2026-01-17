@@ -25,7 +25,6 @@ namespace QuestGraphicsSettings {
 
         // Advanced Page Entries
         MelonPreferences_Entry<bool> TextureStreamingEntry;
-        MelonPreferences_Entry<bool> LowPhysicsEntry;
         MelonPreferences_Entry<bool> ExperimentalEntry;
 
         // Preset Variables
@@ -37,7 +36,6 @@ namespace QuestGraphicsSettings {
         private float PresetTextureStreamingBudget;
         private bool PresetFog;
         private bool PresetTextureStreaming;
-        private bool PresetLowPhysics;
         private bool PresetExperimental;
         private int PerformanceDrops;
 
@@ -90,7 +88,6 @@ namespace QuestGraphicsSettings {
             Page advancedPage = customPage.CreatePage("Advanced Settings", Color.red);
             advancedPage.CreateFunction("PRESS ME", Color.red, () => { AdvancedWarning(); });
             advancedPage.CreateBool("Texture Streaming (!)", Color.red, TextureStreamingEntry.Value, (a) => { TextureStreamingEntry.Value = a; });
-            advancedPage.CreateBool("Low Physics (!)", Color.red, LowPhysicsEntry.Value, (a) => { LowPhysicsEntry.Value = a; });
             advancedPage.CreateBool("Experimental Tweaks (!)", Color.red, ExperimentalEntry.Value, (a) => { ExperimentalEntry.Value = a; });
             advancedPage.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
         }
@@ -105,7 +102,6 @@ namespace QuestGraphicsSettings {
             RenderDistanceEntry = category.CreateEntry("Render Distance", 90f);
             FPSEntry = category.CreateEntry("Target FPS", 90);
             ExperimentalEntry = category.CreateEntry("Experimental Tweaks", false);
-            LowPhysicsEntry = category.CreateEntry("Low Physics", false);
             MelonPreferences.Save();
             category.SaveToFile();
         }
@@ -137,7 +133,6 @@ namespace QuestGraphicsSettings {
         }
 
         private void ApplySettings() {
-            SetPhysics();
             SetTextureStreaming();
             SetRenderScale();
             SetExperimental();
@@ -155,7 +150,6 @@ namespace QuestGraphicsSettings {
             PresetTextureStreamingBudget = 64f;
             PresetLODBias = 0.5f;
             PresetRenderDistance = 50f;
-            PresetLowPhysics = true;
             PresetExperimental = true;
         }
 
@@ -167,7 +161,6 @@ namespace QuestGraphicsSettings {
             PresetTextureStreamingBudget = 128f;
             PresetLODBias = 0.7f;
             PresetRenderDistance = 70f;
-            PresetLowPhysics = true;
             PresetExperimental = true;
         }
 
@@ -179,7 +172,6 @@ namespace QuestGraphicsSettings {
             PresetTextureStreamingBudget = 256f;
             PresetLODBias = 0.8f;
             PresetRenderDistance = 80f;
-            PresetLowPhysics = false;
             PresetExperimental = true;
         }
 
@@ -191,7 +183,6 @@ namespace QuestGraphicsSettings {
             PresetTextureStreamingBudget = 256f;
             PresetLODBias = 1.25f;
             PresetRenderDistance = 100f;
-            PresetLowPhysics = false;
             PresetExperimental = false;
         }
         
@@ -203,7 +194,6 @@ namespace QuestGraphicsSettings {
             PresetTextureStreamingBudget = 256f;
             PresetLODBias = 0.85f;
             PresetRenderDistance = 85f;
-            PresetLowPhysics = true;
             PresetExperimental = true;
         }     
 
@@ -215,7 +205,6 @@ namespace QuestGraphicsSettings {
             PresetTextureStreamingBudget = 256f;
             PresetLODBias = 1f;
             PresetRenderDistance = 90f;
-            PresetLowPhysics = false;
             PresetExperimental = false;
         }  
 
@@ -383,38 +372,6 @@ namespace QuestGraphicsSettings {
             else {
             asset.renderScale = PresetRenderScale; }
         }   
-
-        private void SetPhysics() {
-            if (Preset == "Custom") {
-            if (LowPhysicsEntry.Value) {
-                Physics.defaultSolverIterations = 1;
-                Physics.defaultSolverVelocityIterations = 1;
-                Physics.sleepThreshold = 0.04f;
-                Physics.defaultContactOffset = 0.01f;
-            }
-            
-            if (!LowPhysicsEntry.Value) {
-                Physics.defaultSolverIterations = 6;
-                Physics.defaultSolverVelocityIterations = 2;
-                Physics.sleepThreshold = 0.01f;
-                Physics.defaultContactOffset = 0.0055f;
-            }}
-
-            else {
-            if (PresetLowPhysics) {
-                Physics.defaultSolverIterations = 1;
-                Physics.defaultSolverVelocityIterations = 1;
-                Physics.sleepThreshold = 0.04f;
-                Physics.defaultContactOffset = 0.01f;
-            }
-
-            if (!PresetLowPhysics) {
-                Physics.defaultSolverIterations = 6;
-                Physics.defaultSolverVelocityIterations = 2;
-                Physics.sleepThreshold = 0.01f;
-                Physics.defaultContactOffset = 0.0055f;
-            }}
-        }
 
         private void SetExperimental() {
             if (Preset == "Custom") {
