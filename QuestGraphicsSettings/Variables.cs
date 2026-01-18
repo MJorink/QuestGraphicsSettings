@@ -6,25 +6,20 @@ namespace QuestGraphicsSettings {
 
         MelonPreferences_Category category;
 
-        // Default Page Entries
         MelonPreferences_Entry<int> FPSEntry;
         MelonPreferences_Entry<float> RenderScaleEntry;
         MelonPreferences_Entry<float> RenderDistanceEntry;
         MelonPreferences_Entry<float> LODBiasEntry;        
         MelonPreferences_Entry<float> TextureStreamingBudgetEntry;
         MelonPreferences_Entry<bool> FogEntry;
-
-        // Advanced Page Entries
         MelonPreferences_Entry<bool> TextureStreamingEntry;
         MelonPreferences_Entry<bool> DebugInfoEntry;
-
-        // FFR Entries / Variables
         MelonPreferences_Entry<bool> FFRAutoEntry;
         MelonPreferences_Entry<int> FFRLevelEntry;
+        private Camera playerCamera;
+        private GameObject fogObject;
         private bool PresetFFRAuto;
         private int PresetFFRLevel;
-
-        // Preset Variables
         private bool AutoPresetState;
         private string Preset;
         private float PresetRenderScale;
@@ -34,15 +29,8 @@ namespace QuestGraphicsSettings {
         private bool PresetFog;
         private bool PresetTextureStreaming;
         private int PerformanceDrops;
-
-        // Other Variables
-        private Camera playerCamera;
-        private GameObject fogObject;
-
         private float presetdelay = 5f;
         private float lastpresettime = 0f;
-
-        // FPS tracking
         private float[] frameTimeSamples = new float[30];
         private int frameIndex = 0;
 

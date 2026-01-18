@@ -3,7 +3,7 @@ using BoneLib.BoneMenu;
 using BoneLib.Notifications;
 using UnityEngine;
 
-[assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "1.2.0", "jorink")]
+[assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "1.3.0", "jorink")]
 [assembly: MelonGame("Stress Level Zero", "BONELAB")]
 
 namespace QuestGraphicsSettings {
@@ -19,13 +19,12 @@ namespace QuestGraphicsSettings {
             Page defaultPage = Page.Root.CreatePage("QuestGraphicsSettings", Color.yellow);
 
             Page customPage = defaultPage.CreatePage("Settings (Custom)", Color.cyan);
-            customPage.CreateFloat("Render Scale", Color.green, RenderScaleEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { RenderScaleEntry.Value = a; ApplySettings(); });
-            customPage.CreateFloat("Render Distance", Color.yellow, RenderDistanceEntry.Value, 5f, 5f, 100f, (a) => { RenderDistanceEntry.Value = a; ApplySettings(); });
-            customPage.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { LODBiasEntry.Value = a; ApplySettings(); });
-            customPage.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 128f, 128f, 1024f, (a) => { TextureStreamingBudgetEntry.Value = a; ApplySettings(); });
-            customPage.CreateBool("Fog", Color.green, FogEntry.Value, (a) => { FogEntry.Value = a; ApplySettings(); });
-            customPage.CreateBool("Auto FFR", Color.cyan, FFRAutoEntry.Value, (a) => { FFRAutoEntry.Value = a; ApplySettings(); });
-            customPage.CreateInt("FFR Level (Manual)", Color.green, FFRLevelEntry.Value, 1, 0, 3, (a) => { FFRLevelEntry.Value = a; if (!FFRAutoEntry.Value) ApplySettings(); });
+            customPage.CreateFloat("Render Scale", Color.yellow, RenderScaleEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { RenderScaleEntry.Value = a; SetRenderScale(); });
+            customPage.CreateFloat("Render Distance", Color.green, RenderDistanceEntry.Value, 5f, 5f, 100f, (a) => { RenderDistanceEntry.Value = a; SetRenderDistance(); });
+            customPage.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { LODBiasEntry.Value = a; SetLODBias(); });
+            customPage.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 128f, 128f, 1024f, (a) => { TextureStreamingBudgetEntry.Value = a; SetTextureStreaming(); });
+            customPage.CreateBool("Fog", Color.green, FogEntry.Value, (a) => { FogEntry.Value = a; SetFog(); });
+            customPage.CreateInt("FFR Level", Color.green, FFRLevelEntry.Value, 1, 0, 3, (a) => { FFRLevelEntry.Value = a; if (!FFRAutoEntry.Value) SetFFR(); });
             customPage.CreateFunction("Save Settings", Color.cyan, () => { MelonPreferences.Save(); });
             customPage.CreateFunction("Enable Custom Preset", Color.cyan, () => { CustomPreset(); ApplySettings(); });
 
@@ -41,13 +40,14 @@ namespace QuestGraphicsSettings {
 
             Page autopresetPage = defaultPage.CreatePage("Auto Preset (WIP)", Color.magenta);
             autopresetPage.CreateFunction("Toggle Auto Preset", Color.cyan, () => { ToggleAutoPreset();});
-            autopresetPage.CreateInt("Target FPS", Color.green, FPSEntry.Value, 10, 60, 120, (a) => { FPSEntry.Value = a; ApplySettings(); });
+            autopresetPage.CreateInt("Target FPS", Color.green, FPSEntry.Value, 10, 60, 90, (a) => { FPSEntry.Value = a; });
             autopresetPage.CreateFunction("Show Current Preset", Color.cyan, () => { CurrentPreset();});
 
             Page advancedPage = customPage.CreatePage("Advanced Settings", Color.red);
             advancedPage.CreateFunction("PRESS ME", Color.red, () => { AdvancedWarning(); });
-            advancedPage.CreateBool("Texture Streaming (!)", Color.red, TextureStreamingEntry.Value, (a) => { TextureStreamingEntry.Value = a; ApplySettings(); });
-            advancedPage.CreateBool("Debug Info", Color.magenta, DebugInfoEntry.Value, (a) => { DebugInfoEntry.Value = a; ApplySettings(); });                        
+            advancedPage.CreateBool("Texture Streaming (!)", Color.red, TextureStreamingEntry.Value, (a) => { TextureStreamingEntry.Value = a; SetTextureStreaming(); });
+            advancedPage.CreateBool("Dynamic FFR", Color.green, FFRAutoEntry.Value, (a) => { FFRAutoEntry.Value = a; SetFFR(); });
+            advancedPage.CreateBool("Debug Info", Color.magenta, DebugInfoEntry.Value, (a) => { DebugInfoEntry.Value = a; DebugInfo(); });                        
         }
 
         private void SetupMelonPreferences() {
@@ -57,9 +57,9 @@ namespace QuestGraphicsSettings {
             TextureStreamingEntry = category.CreateEntry("Texture Streaming Enabled", true);
             TextureStreamingBudgetEntry = category.CreateEntry("Texture Streaming Budget", 512f);
             LODBiasEntry = category.CreateEntry("LOD Bias", 1f);
-            RenderDistanceEntry = category.CreateEntry("Render Distance", 90f);
+            RenderDistanceEntry = category.CreateEntry("Render Distance", 100f);
             FPSEntry = category.CreateEntry("Target FPS", 90);
-            FFRAutoEntry = category.CreateEntry("FFR Auto", false);
+            FFRAutoEntry = category.CreateEntry("Dynamic FFR", false);
             FFRLevelEntry = category.CreateEntry("FFR Level", 3);
             DebugInfoEntry = category.CreateEntry("Debug Info", false); 
             MelonPreferences.Save();

@@ -5,7 +5,6 @@ using UnityEngine;
 namespace QuestGraphicsSettings {
     public partial class Core {
 
-        // Presets
         private void VeryLowPreset() {
             Preset = "VeryLow";
             PresetFog = false;
@@ -15,7 +14,7 @@ namespace QuestGraphicsSettings {
             PresetLODBias = 0.5f;
             PresetRenderDistance = 50f;
             PresetFFRAuto = false;
-            PresetFFRLevel = 4;
+            PresetFFRLevel = 3;
         }
 
         private void LowPreset() {
@@ -27,7 +26,7 @@ namespace QuestGraphicsSettings {
             PresetLODBias = 0.7f;
             PresetRenderDistance = 70f;
             PresetFFRAuto = false;
-            PresetFFRLevel = 4;
+            PresetFFRLevel = 3;
         }
 
         private void MediumPreset() {
@@ -51,7 +50,7 @@ namespace QuestGraphicsSettings {
             PresetLODBias = 1.25f;
             PresetRenderDistance = 100f;
             PresetFFRAuto = false;
-            PresetFFRLevel = 1;
+            PresetFFRLevel = 3;
         }
         
         private void JorinksPreset() {
@@ -63,7 +62,7 @@ namespace QuestGraphicsSettings {
             PresetLODBias = 0.85f;
             PresetRenderDistance = 85f;
             PresetFFRAuto = false;
-            PresetFFRLevel = 4;
+            PresetFFRLevel = 3;
         }     
 
         private void DefaultPreset() {
@@ -82,7 +81,6 @@ namespace QuestGraphicsSettings {
             Preset = "Custom";
         } 
 
-        // Preset Notifications
         private void CurrentPreset() {
             var notif = new Notification {
                 Title = "Current Preset",
@@ -94,7 +92,6 @@ namespace QuestGraphicsSettings {
             Notifier.Send(notif);
         }
 
-        // Auto preset
         private void ToggleAutoPreset() {
             AutoPresetState = !AutoPresetState;
             if (AutoPresetState) {
@@ -124,7 +121,6 @@ namespace QuestGraphicsSettings {
             float currentFPS = GetAverageFPS();
             lastpresettime = Time.time;
 
-            // Performance Drop, Lower Preset
             if (currentFPS < FPSEntry.Value - 10) {
                 
                 PerformanceDrops += 1;
