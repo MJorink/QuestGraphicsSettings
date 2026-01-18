@@ -99,7 +99,6 @@ namespace QuestGraphicsSettings {
             if (AutoPresetState) {
                 HighPreset();
                 ApplySettings();
-                PerformanceDrops = 0;
             }
             else {
                 ApplySettings();

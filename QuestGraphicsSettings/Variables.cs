@@ -18,13 +18,22 @@ namespace QuestGraphicsSettings {
         MelonPreferences_Entry<bool> TextureStreamingEntry;
         MelonPreferences_Entry<bool> DebugInfoEntry;
 
-        // FFR Entries
+        // FFR Entries / Variables
         MelonPreferences_Entry<bool> FFRAutoEntry;
         MelonPreferences_Entry<int> FFRLevelEntry;
-
-        // FFR Variables
         private bool PresetFFRAuto;
         private int PresetFFRLevel;
+
+        // Preset Variables
+        private bool AutoPresetState;
+        private string Preset;
+        private float PresetRenderScale;
+        private float PresetRenderDistance;
+        private float PresetLODBias;        
+        private float PresetTextureStreamingBudget;
+        private bool PresetFog;
+        private bool PresetTextureStreaming;
+        private int PerformanceDrops;
 
         // Other Variables
         private Camera playerCamera;

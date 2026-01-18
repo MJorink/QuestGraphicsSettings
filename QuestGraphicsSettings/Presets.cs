@@ -5,17 +5,6 @@ using UnityEngine;
 namespace QuestGraphicsSettings {
     public partial class Core {
 
-        // Preset Variables
-        private bool AutoPresetState;
-        private string Preset;
-        private float PresetRenderScale;
-        private float PresetRenderDistance;
-        private float PresetLODBias;        
-        private float PresetTextureStreamingBudget;
-        private bool PresetFog;
-        private bool PresetTextureStreaming;
-        private int PerformanceDrops;
-
         // Presets
         private void VeryLowPreset() {
             Preset = "VeryLow";
