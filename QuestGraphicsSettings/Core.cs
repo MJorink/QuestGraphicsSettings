@@ -378,36 +378,44 @@ namespace QuestGraphicsSettings {
             // Experimental settings for performance research
             if (ExperimentalEntry.Value) {
 				RenderSettings.defaultReflectionResolution = 16;
-                QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
+                //QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
                 QualitySettings.pixelLightCount = 0;
                 QualitySettings.softVegetation = false;
                 QualitySettings.particleRaycastBudget = 0;
+                QualitySettings.streamingMipmapsMaxFileIORequests = 128;
+                QualitySettings.streamingMipmapsMaxLevelReduction = 3;
                 }
 
             // Default BoneLab settings found by logging
             if (!ExperimentalEntry.Value) {
                 RenderSettings.defaultReflectionResolution = 128;
-                QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
+                //QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
                 QualitySettings.pixelLightCount = 99;
                 QualitySettings.softVegetation = true;
                 QualitySettings.particleRaycastBudget = 512;
+                QualitySettings.streamingMipmapsMaxFileIORequests = 512;
+                QualitySettings.streamingMipmapsMaxLevelReduction = 4;
                 }}
 
             else {
             if (PresetExperimental) {
 				RenderSettings.defaultReflectionResolution = 16;
-                QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
+                //QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
                 QualitySettings.pixelLightCount = 0;
                 QualitySettings.softVegetation = false;
                 QualitySettings.particleRaycastBudget = 0;
+                QualitySettings.streamingMipmapsMaxFileIORequests = 128;
+                QualitySettings.streamingMipmapsMaxLevelReduction = 3;
                 }
 
             if (!PresetExperimental) {
                 RenderSettings.defaultReflectionResolution = 128;
-                QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
+                //QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
                 QualitySettings.pixelLightCount = 99;
                 QualitySettings.softVegetation = true;
                 QualitySettings.particleRaycastBudget = 512;
+                QualitySettings.streamingMipmapsMaxFileIORequests = 512;
+                QualitySettings.streamingMipmapsMaxLevelReduction = 4;
                 }
             }
         }
