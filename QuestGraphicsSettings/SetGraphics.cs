@@ -82,13 +82,10 @@ namespace QuestGraphicsSettings {
                     ffrLevel = PresetFFRLevel;
                 }
 
-                // Apply FFR via Unity.XR.Oculus Performance API
                 if (autoFFR) {
-                    // Enable dynamic/automatic FFR
                     Unity.XR.Oculus.Utils.useDynamicFoveatedRendering = true;
                     MelonLogger.Msg("FFR: Automatic/Dynamic mode enabled");
                 } else {
-                    // Manual FFR level
                     Unity.XR.Oculus.Utils.useDynamicFoveatedRendering = false;
                     Unity.XR.Oculus.Utils.foveatedRenderingLevel = ffrLevel;
                     
@@ -104,9 +101,6 @@ namespace QuestGraphicsSettings {
                             break;
                         case 3:
                             MelonLogger.Msg("FFR: Level 3 (High)");
-                            break;
-                        case 4:
-                            MelonLogger.Msg("FFR: Level 4 (Very High)");
                             break;
                     }
                 }

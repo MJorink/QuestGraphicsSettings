@@ -19,15 +19,13 @@ namespace QuestGraphicsSettings {
             Page defaultPage = Page.Root.CreatePage("QuestGraphicsSettings", Color.yellow);
 
             Page customPage = defaultPage.CreatePage("Settings (Custom)", Color.cyan);
-            customPage.CreateFloat("Render Scale", Color.green, RenderScaleEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { RenderScaleEntry.Value = a; });
-            customPage.CreateFloat("Render Distance", Color.yellow, RenderDistanceEntry.Value, 5f, 5f, 150f, (a) => { RenderDistanceEntry.Value = a; });
-            customPage.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 3.0f, (a) => { LODBiasEntry.Value = a; });
-            customPage.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 32f, 32f, 3072f, (a) => { TextureStreamingBudgetEntry.Value = a; });
-            customPage.CreateBool("Fog", Color.green, FogEntry.Value, (a) => { FogEntry.Value = a; });
+            customPage.CreateFloat("Render Scale", Color.green, RenderScaleEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { RenderScaleEntry.Value = a; ApplySettings(); });
+            customPage.CreateFloat("Render Distance", Color.yellow, RenderDistanceEntry.Value, 5f, 5f, 150f, (a) => { RenderDistanceEntry.Value = a; ApplySettings(); });
+            customPage.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 3.0f, (a) => { LODBiasEntry.Value = a; ApplySettings(); });
+            customPage.CreateFloat("Texture Streaming Budget", Color.yellow, TextureStreamingBudgetEntry.Value, 32f, 32f, 3072f, (a) => { TextureStreamingBudgetEntry.Value = a; ApplySettings(); });
+            customPage.CreateBool("Fog", Color.green, FogEntry.Value, (a) => { FogEntry.Value = a; ApplySettings(); });
             customPage.CreateBool("Auto FFR", Color.cyan, FFRAutoEntry.Value, (a) => { FFRAutoEntry.Value = a; ApplySettings(); });
-            customPage.CreateInt("FFR Level (Manual)", Color.green, FFRLevelEntry.Value, 1, 0, 4, (a) => { FFRLevelEntry.Value = a; if (!FFRAutoEntry.Value) ApplySettings(); });
-
-            customPage.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
+            customPage.CreateInt("FFR Level (Manual)", Color.green, FFRLevelEntry.Value, 1, 0, 3, (a) => { FFRLevelEntry.Value = a; if (!FFRAutoEntry.Value) ApplySettings(); });
             customPage.CreateFunction("Save Settings", Color.cyan, () => { MelonPreferences.Save(); });
             customPage.CreateFunction("Enable Custom Preset", Color.cyan, () => { CustomPreset(); ApplySettings(); });
 
@@ -43,14 +41,13 @@ namespace QuestGraphicsSettings {
 
             Page autopresetPage = defaultPage.CreatePage("Auto Preset (WIP)", Color.magenta);
             autopresetPage.CreateFunction("Toggle Auto Preset", Color.cyan, () => { ToggleAutoPreset();});
-            autopresetPage.CreateInt("Target FPS", Color.green, FPSEntry.Value, 10, 60, 120, (a) => { FPSEntry.Value = a; });
+            autopresetPage.CreateInt("Target FPS", Color.green, FPSEntry.Value, 10, 60, 120, (a) => { FPSEntry.Value = a; ApplySettings(); });
             autopresetPage.CreateFunction("Show Current Preset", Color.cyan, () => { CurrentPreset();});
 
             Page advancedPage = customPage.CreatePage("Advanced Settings", Color.red);
             advancedPage.CreateFunction("PRESS ME", Color.red, () => { AdvancedWarning(); });
-            advancedPage.CreateBool("Texture Streaming (!)", Color.red, TextureStreamingEntry.Value, (a) => { TextureStreamingEntry.Value = a; });
-            advancedPage.CreateBool("Debug Info", Color.magenta, DebugInfoEntry.Value, (a) => { DebugInfoEntry.Value = a; });            
-            advancedPage.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
+            advancedPage.CreateBool("Texture Streaming (!)", Color.red, TextureStreamingEntry.Value, (a) => { TextureStreamingEntry.Value = a; ApplySettings(); });
+            advancedPage.CreateBool("Debug Info", Color.magenta, DebugInfoEntry.Value, (a) => { DebugInfoEntry.Value = a; ApplySettings(); });                        
         }
 
         private void SetupMelonPreferences() {
@@ -64,7 +61,7 @@ namespace QuestGraphicsSettings {
             FPSEntry = category.CreateEntry("Target FPS", 90);
             FFRAutoEntry = category.CreateEntry("FFR Auto", true);
             FFRLevelEntry = category.CreateEntry("FFR Level", 1);
-            DebugInfoEntry = category.CreateEntry("Debug Info", false);
+            DebugInfoEntry = category.CreateEntry("Debug Info", false); 
             MelonPreferences.Save();
             category.SaveToFile();
         }
@@ -78,20 +75,39 @@ namespace QuestGraphicsSettings {
 
         private void DebugInfo() {
             if (!DebugInfoEntry.Value) return;
+            if (Preset == "Custom") {
             var notif = new Notification {
                 Title = "Debug Info",
                 Message = "Preset: " + Preset + "\n" +
-                          "Render Scale: " + RenderScaleEntry.Value.ToString("F2") + "\n" +
-                          "Render Distance: " + RenderDistanceEntry.Value.ToString("F2") + "\n" +
-                          "LOD Bias: " + LODBiasEntry.Value.ToString("F2") + "\n" +
-                          "Texture Streaming Budget: " + TextureStreamingBudgetEntry.Value.ToString("F2") + " MB\n" +
+                          "Render Scale: " + RenderScaleEntry.Value + "\n" +
+                          "Render Distance: " + RenderDistanceEntry.Value + "\n" +
+                          "LOD Bias: " + LODBiasEntry.Value + "\n" +
+                          "Texture Streaming Budget: " + TextureStreamingBudgetEntry.Value + " MB\n" +
                           "Fog: " + (FogEntry.Value ? "Enabled" : "Disabled") + "\n" +
                           "FFR: " + (FFRAutoEntry.Value ? "Auto" : ("Level " + FFRLevelEntry.Value)),
                 Type = NotificationType.Success,
-                PopupLength = 2.0f,
+                PopupLength = 4.0f,
                 ShowTitleOnPopup = true
             };
             Notifier.Send(notif);
+        }   else  {
+            var notif = new Notification {
+                Title = "Debug Info",
+                Message = "Preset: " + Preset + "\n" +
+                          "Render Scale: " + PresetRenderScale + "\n" +
+                          "Render Distance: " + PresetRenderDistance + "\n" +
+                          "LOD Bias: " + PresetLODBias + "\n" +
+                          "Texture Streaming Budget: " + PresetTextureStreamingBudget + " MB\n" +
+                          "Fog: " + (PresetFog ? "Enabled" : "Disabled") + "\n" +
+                          "FFR: " + (PresetFFRAuto ? "Auto" : ("Level " + PresetFFRLevel)),
+                Type = NotificationType.Success,
+                PopupLength = 4.0f,
+                ShowTitleOnPopup = true
+            };
+            Notifier.Send(notif);
+        }
+        
+        
         }
 
         public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
