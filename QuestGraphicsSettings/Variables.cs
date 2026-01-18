@@ -16,6 +16,7 @@ namespace QuestGraphicsSettings {
 
         // Advanced Page Entries
         MelonPreferences_Entry<bool> TextureStreamingEntry;
+        MelonPreferences_Entry<bool> DebugInfoEntry;
 
         // FFR Entries
         MelonPreferences_Entry<bool> FFRAutoEntry;
