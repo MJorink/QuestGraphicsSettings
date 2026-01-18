@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
+using Unity.XR.Oculus;
 
 [assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "1.2.0", "jorink")]
 [assembly: MelonGame("Stress Level Zero", "BONELAB")]
@@ -25,7 +26,10 @@ namespace QuestGraphicsSettings {
 
         // Advanced Page Entries
         MelonPreferences_Entry<bool> TextureStreamingEntry;
-        MelonPreferences_Entry<bool> ExperimentalEntry;
+
+        // FFR Entries
+        MelonPreferences_Entry<bool> FFRAutoEntry;
+        MelonPreferences_Entry<int> FFRLevelEntry;
 
         // Preset Variables
         private bool AutoPresetState;
@@ -36,8 +40,11 @@ namespace QuestGraphicsSettings {
         private float PresetTextureStreamingBudget;
         private bool PresetFog;
         private bool PresetTextureStreaming;
-        private bool PresetExperimental;
         private int PerformanceDrops;
+
+        // FFR Variables
+        private bool PresetFFRAuto;
+        private int PresetFFRLevel;
 
         // Other Variables
         private Camera playerCamera;
@@ -70,7 +77,6 @@ namespace QuestGraphicsSettings {
             customPage.CreateFunction("Enable Custom Preset", Color.cyan, () => { CustomPreset(); ApplySettings(); });
 
             Page presetsPage = defaultPage.CreatePage("Presets", Color.blue);
-            presetsPage.CreateFunction("PRESS ME", Color.red, () => { PresetsWarning(); });
             presetsPage.CreateFunction("Jorink's Preset", Color.magenta, () => { JorinksPreset(); ApplySettings(); });
             presetsPage.CreateFunction("Very Low", Color.green, () => { VeryLowPreset(); ApplySettings(); });
             presetsPage.CreateFunction("Low", Color.green, () => { LowPreset(); ApplySettings(); });
@@ -88,8 +94,13 @@ namespace QuestGraphicsSettings {
             Page advancedPage = customPage.CreatePage("Advanced Settings", Color.red);
             advancedPage.CreateFunction("PRESS ME", Color.red, () => { AdvancedWarning(); });
             advancedPage.CreateBool("Texture Streaming (!)", Color.red, TextureStreamingEntry.Value, (a) => { TextureStreamingEntry.Value = a; });
-            advancedPage.CreateBool("Experimental Tweaks (!)", Color.red, ExperimentalEntry.Value, (a) => { ExperimentalEntry.Value = a; });
             advancedPage.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
+
+            Page ffrPage = defaultPage.CreatePage("Fixed Foveated Rendering", Color.magenta);
+            ffrPage.CreateBool("Auto FFR", Color.cyan, FFRAutoEntry.Value, (a) => { FFRAutoEntry.Value = a; ApplySettings(); });
+            ffrPage.CreateInt("FFR Level (Manual)", Color.green, FFRLevelEntry.Value, 1, 0, 4, (a) => { FFRLevelEntry.Value = a; if (!FFRAutoEntry.Value) ApplySettings(); });
+            ffrPage.CreateFunction("Apply Settings", Color.cyan, () => { ApplySettings(); });
+            ffrPage.CreateFunction("FFR Info", Color.yellow, () => { FFRInfo(); });
         }
 
         private void SetupMelonPreferences() {
@@ -101,7 +112,8 @@ namespace QuestGraphicsSettings {
             LODBiasEntry = category.CreateEntry("LOD Bias", 1f);
             RenderDistanceEntry = category.CreateEntry("Render Distance", 90f);
             FPSEntry = category.CreateEntry("Target FPS", 90);
-            ExperimentalEntry = category.CreateEntry("Experimental Tweaks", false);
+            FFRAutoEntry = category.CreateEntry("FFR Auto", true);
+            FFRLevelEntry = category.CreateEntry("FFR Level", 1);
             MelonPreferences.Save();
             category.SaveToFile();
         }
@@ -113,10 +125,10 @@ namespace QuestGraphicsSettings {
             );
         }
 
-        private void PresetsWarning() {
-             Menu.DisplayDialog(
-            "WARNING",
-            "Some presets also use experimental options, these settings are experimental and minimally tested, and may cause bugs or crashes. Proceed with caution! Preset Custom will disable presets and use your own settings in the normal menu."
+        private void FFRInfo() {
+            Menu.DisplayDialog(
+            "Fixed Foveated Rendering Info",
+            "FFR reduces peripheral rendering quality to improve performance. Auto: Dynamically adjusts based on GPU load. Manual: Level 0=Off, 1=Low, 2=Medium, 3=High, 4=Very High. Higher levels = better performance but more noticeable peripheral blur."
             );
         }
 
@@ -135,10 +147,10 @@ namespace QuestGraphicsSettings {
         private void ApplySettings() {
             SetTextureStreaming();
             SetRenderScale();
-            SetExperimental();
             SetRenderDistance();
             SetLODBias();
             SetFog();
+            SetFFR();
         }
 
         // Presets
@@ -150,7 +162,8 @@ namespace QuestGraphicsSettings {
             PresetTextureStreamingBudget = 64f;
             PresetLODBias = 0.5f;
             PresetRenderDistance = 50f;
-            PresetExperimental = true;
+            PresetFFRAuto = false;
+            PresetFFRLevel = 3;
         }
 
         private void LowPreset() {
@@ -161,7 +174,8 @@ namespace QuestGraphicsSettings {
             PresetTextureStreamingBudget = 128f;
             PresetLODBias = 0.7f;
             PresetRenderDistance = 70f;
-            PresetExperimental = true;
+            PresetFFRAuto = false;
+            PresetFFRLevel = 2;
         }
 
         private void MediumPreset() {
@@ -172,7 +186,8 @@ namespace QuestGraphicsSettings {
             PresetTextureStreamingBudget = 256f;
             PresetLODBias = 0.8f;
             PresetRenderDistance = 80f;
-            PresetExperimental = true;
+            PresetFFRAuto = true;
+            PresetFFRLevel = 1;
         }
 
         private void HighPreset() {
@@ -183,7 +198,8 @@ namespace QuestGraphicsSettings {
             PresetTextureStreamingBudget = 256f;
             PresetLODBias = 1.25f;
             PresetRenderDistance = 100f;
-            PresetExperimental = false;
+            PresetFFRAuto = true;
+            PresetFFRLevel = 0;
         }
         
         private void JorinksPreset() {
@@ -194,7 +210,8 @@ namespace QuestGraphicsSettings {
             PresetTextureStreamingBudget = 256f;
             PresetLODBias = 0.85f;
             PresetRenderDistance = 85f;
-            PresetExperimental = true;
+            PresetFFRAuto = true;
+            PresetFFRLevel = 1;
         }     
 
         private void DefaultPreset() {
@@ -205,7 +222,8 @@ namespace QuestGraphicsSettings {
             PresetTextureStreamingBudget = 256f;
             PresetLODBias = 1f;
             PresetRenderDistance = 90f;
-            PresetExperimental = false;
+            PresetFFRAuto = true;
+            PresetFFRLevel = 1;
         }  
 
         private void CustomPreset() {
@@ -373,50 +391,50 @@ namespace QuestGraphicsSettings {
             asset.renderScale = PresetRenderScale; }
         }   
 
-        private void SetExperimental() {
-            if (Preset == "Custom") {
-            // Experimental settings for performance research
-            if (ExperimentalEntry.Value) {
-				RenderSettings.defaultReflectionResolution = 16;
-                //QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
-                QualitySettings.pixelLightCount = 0;
-                QualitySettings.softVegetation = false;
-                QualitySettings.particleRaycastBudget = 0;
-                QualitySettings.streamingMipmapsMaxFileIORequests = 128;
-                QualitySettings.streamingMipmapsMaxLevelReduction = 3;
+        private void SetFFR() {
+            try {                
+                bool autoFFR;
+                int ffrLevel;
+
+                if (Preset == "Custom") {
+                    autoFFR = FFRAutoEntry.Value;
+                    ffrLevel = FFRLevelEntry.Value;
+                } else {
+                    autoFFR = PresetFFRAuto;
+                    ffrLevel = PresetFFRLevel;
                 }
 
-            // Default BoneLab settings found by logging
-            if (!ExperimentalEntry.Value) {
-                RenderSettings.defaultReflectionResolution = 128;
-                //QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
-                QualitySettings.pixelLightCount = 99;
-                QualitySettings.softVegetation = true;
-                QualitySettings.particleRaycastBudget = 512;
-                QualitySettings.streamingMipmapsMaxFileIORequests = 512;
-                QualitySettings.streamingMipmapsMaxLevelReduction = 4;
-                }}
-
-            else {
-            if (PresetExperimental) {
-				RenderSettings.defaultReflectionResolution = 16;
-                //QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
-                QualitySettings.pixelLightCount = 0;
-                QualitySettings.softVegetation = false;
-                QualitySettings.particleRaycastBudget = 0;
-                QualitySettings.streamingMipmapsMaxFileIORequests = 128;
-                QualitySettings.streamingMipmapsMaxLevelReduction = 3;
+                // Apply FFR via Unity.XR.Oculus Performance API
+                if (autoFFR) {
+                    // Enable dynamic/automatic FFR
+                    Unity.XR.Oculus.Utils.useDynamicFoveatedRendering = true;
+                    MelonLogger.Msg("FFR: Automatic/Dynamic mode enabled");
+                } else {
+                    // Manual FFR level
+                    Unity.XR.Oculus.Utils.useDynamicFoveatedRendering = false;
+                    Unity.XR.Oculus.Utils.foveatedRenderingLevel = ffrLevel;
+                    
+                    switch (ffrLevel) {
+                        case 0:
+                            MelonLogger.Msg("FFR: Level 0 (Off)");
+                            break;
+                        case 1:
+                            MelonLogger.Msg("FFR: Level 1 (Low)");
+                            break;
+                        case 2:
+                            MelonLogger.Msg("FFR: Level 2 (Medium)");
+                            break;
+                        case 3:
+                            MelonLogger.Msg("FFR: Level 3 (High)");
+                            break;
+                        case 4:
+                            MelonLogger.Msg("FFR: Level 4 (Very High)");
+                            break;
+                    }
                 }
 
-            if (!PresetExperimental) {
-                RenderSettings.defaultReflectionResolution = 128;
-                //QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
-                QualitySettings.pixelLightCount = 99;
-                QualitySettings.softVegetation = true;
-                QualitySettings.particleRaycastBudget = 512;
-                QualitySettings.streamingMipmapsMaxFileIORequests = 512;
-                QualitySettings.streamingMipmapsMaxLevelReduction = 4;
-                }
+            } catch (System.Exception e) {
+                MelonLogger.Warning("FFR error: " + e.Message);
             }
         }
     }
