@@ -527,7 +527,7 @@
 		<Compile Include="Variables.cs" />
 	</ItemGroup>
 
-	<Target Name="CopyOutput" AfterTargets="Build" Condition="'$(CopyDestination)' != ''">
-		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(CopyDestination)" />
+	<Target Name="CopyOutput" AfterTargets="Build" Condition="'$(QGSBinDir)' != ''">
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(QGSBinDir)" />
 	</Target>
 </Project>
