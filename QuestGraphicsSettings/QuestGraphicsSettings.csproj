@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>disable</Nullable>
 		<RootNamespace>QuestGraphicsSettings</RootNamespace>
@@ -521,7 +521,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="Core.cs" />
+		<Compile Include="Setup.cs" />
+		<Compile Include="Presets.cs" />
+		<Compile Include="SetGraphics.cs" />
+		<Compile Include="Variables.cs" />
 	</ItemGroup>
 
 	<Target Name="CopyOutput" AfterTargets="Build" Condition="'$(CopyDestination)' != ''">
