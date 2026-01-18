@@ -109,7 +109,7 @@ namespace QuestGraphicsSettings {
         private void ToggleAutoPreset() {
             AutoPresetState = !AutoPresetState;
             if (AutoPresetState) {
-                DefaultPreset();
+                HighPreset();
                 ApplySettings();
             }
 
@@ -156,16 +156,12 @@ namespace QuestGraphicsSettings {
                     LowPreset();
                     ApplySettings();
                 }
-                else if (Preset == "Default") {
-                    MediumPreset();
-                    ApplySettings();
-                }
                 else if (Preset == "High") {
-                    DefaultPreset();
+                    MediumPreset();
                     ApplySettings();
                 }
                 else {
-                    MediumPreset();
+                    HighPreset();
                     ApplySettings();
                 }
             }

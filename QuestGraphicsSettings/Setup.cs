@@ -97,7 +97,7 @@ namespace QuestGraphicsSettings {
         public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
             base.OnSceneWasLoaded(buildIndex, sceneName);
             if (AutoPresetState) {
-                DefaultPreset();
+                HighPreset();
                 ApplySettings();
                 PerformanceDrops = 0;
             }
