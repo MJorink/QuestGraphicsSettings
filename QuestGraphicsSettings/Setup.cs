@@ -130,6 +130,7 @@ namespace QuestGraphicsSettings {
         }
 
         public override void OnUpdate() {
+            base.OnUpdate();
             frameTimeSamples[frameIndex] = Time.unscaledDeltaTime;
             frameIndex = (frameIndex + 1) % frameTimeSamples.Length;
             AutoPreset();
