@@ -3,7 +3,7 @@ using BoneLib.BoneMenu;
 using BoneLib.Notifications;
 using UnityEngine;
 
-[assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "1.3.0", "jorink")]
+[assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "1.3.1", "jorink")]
 [assembly: MelonGame("Stress Level Zero", "BONELAB")]
 
 namespace QuestGraphicsSettings {
