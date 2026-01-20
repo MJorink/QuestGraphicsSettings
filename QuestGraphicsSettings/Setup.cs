@@ -16,7 +16,7 @@ namespace QuestGraphicsSettings {
         }
 
         private void SetupBoneMenu() {
-            Page defaultPage = Page.Root.CreatePage("QuestGraphicsSettings", Color.yellow);
+            Page defaultPage = Page.Root.CreatePage("Jorink", Color.magenta).CreatePage("QuestGraphicsSettings", Color.yellow);
 
             Page customPage = defaultPage.CreatePage("Settings (Custom)", Color.cyan);
             customPage.CreateFloat("Render Scale", Color.yellow, RenderScaleEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { RenderScaleEntry.Value = a; SetRenderScale(); });
