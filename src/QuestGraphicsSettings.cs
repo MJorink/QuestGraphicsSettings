@@ -50,7 +50,7 @@ namespace QuestGraphicsSettings
             {
                 RenderScale = 0.80f,
                 RenderDistance = 60f,
-                DisableRenderDistanceTweaks = false,
+                DisableRenderDistanceTweaks = true,
                 LODBias = 1.00f,
                 FFRLevel = 3,
             },
@@ -58,14 +58,14 @@ namespace QuestGraphicsSettings
             {
                 RenderScale = 1.00f,
                 RenderDistance = 120f,
-                DisableRenderDistanceTweaks = false,
+                DisableRenderDistanceTweaks = true,
                 LODBias = 1.25f,
                 FFRLevel = 3,
             },
             ["high"] = new GraphicsPreset
             {
                 RenderScale = 1.50f,
-                RenderDistance = 120f,
+                RenderDistance = 200f,
                 DisableRenderDistanceTweaks = true,
                 LODBias = 1.50f,
                 FFRLevel = 3,
@@ -97,11 +97,13 @@ namespace QuestGraphicsSettings
         {
             Page defaultPage = Page.Root.CreatePage("Jorink", Color.red).CreatePage("QuestGraphicsSettings", Color.red);
             defaultPage.CreateFloat("Render Scale", Color.yellow, RenderScaleEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { RenderScaleEntry.Value = a; SetRenderScale(); });
-            defaultPage.CreateFloat("Render Distance", Color.green, RenderDistanceEntry.Value, 5f, 5f, 300f, (a) => { RenderDistanceEntry.Value = a; SetRenderDistance(); });
-            defaultPage.CreateBool("Disable Render Distance Tweaks", Color.cyan, DisableRenderDistanceTweaksEntry.Value, (a) => { DisableRenderDistanceTweaksEntry.Value = a; SetRenderDistance(); });
             defaultPage.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { LODBiasEntry.Value = a; SetLODBias(); });
             defaultPage.CreateInt("FFR Level", Color.green, FFRLevelEntry.Value, 1, 0, 3, (a) => { FFRLevelEntry.Value = a; SetFFR(); });
             defaultPage.CreateFunction("Save Settings", Color.cyan, () => { MelonPreferences.Save(); });
+
+            Page experimentalPage = defaultPage.CreatePage("Experimental", Color.yellow);
+            experimentalPage.CreateFloat("Render Distance", Color.green, RenderDistanceEntry.Value, 5f, 5f, 300f, (a) => { RenderDistanceEntry.Value = a; SetRenderDistance(); });
+            experimentalPage.CreateBool("Disable Render Distance Tweaks", Color.cyan, DisableRenderDistanceTweaksEntry.Value, (a) => { DisableRenderDistanceTweaksEntry.Value = a; SetRenderDistance(); });
 
             presetsPage = defaultPage.CreatePage("Presets", Color.magenta);
             presetsPage.CreateString("Custom Preset Name", Color.white, customPresetNameInput, (value) => { customPresetNameInput = NormalizePresetName(value); });
@@ -122,8 +124,8 @@ namespace QuestGraphicsSettings
         {
             category = MelonPreferences.CreateCategory("QuestGraphicsSettings");
             RenderScaleEntry = category.CreateEntry("Render Scale", 1.0f);
-            RenderDistanceEntry = category.CreateEntry("Render Distance", 120f);
-            DisableRenderDistanceTweaksEntry = category.CreateEntry("Disable Render Distance Tweaks", false);
+            RenderDistanceEntry = category.CreateEntry("Render Distance", 200f);
+            DisableRenderDistanceTweaksEntry = category.CreateEntry("Disable Render Distance Tweaks", true);
             LODBiasEntry = category.CreateEntry("LOD Bias", 1.5f);
             FFRLevelEntry = category.CreateEntry("FFR Level", 3);
             CustomPresetsEntry = category.CreateEntry("Custom Presets", "{}");
