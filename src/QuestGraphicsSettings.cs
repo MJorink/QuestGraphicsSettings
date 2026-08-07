@@ -83,6 +83,7 @@ namespace QuestGraphicsSettings
 
         public override void OnInitializeMelon()
         {
+        	base.OnInitializeMelon();
             SetupMelonPreferences();
             SetupBoneMenu();
             Hooking.OnLevelLoaded += OnLevelLoaded;
@@ -91,6 +92,7 @@ namespace QuestGraphicsSettings
 
         public override void OnDeinitializeMelon()
         {
+        	base.OnDeinitializeMelon();
             Hooking.OnLevelLoaded -= OnLevelLoaded;
             Hooking.OnUIRigCreated -= SetupPauseMenuButton;
         }
@@ -132,18 +134,20 @@ namespace QuestGraphicsSettings
 
         private void SetupPauseMenuButton()
         {
+            if (pauseMenuButton != null) return;
+
             try
             {
                 TrySetupPauseMenuButton();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                MelonLogger.Warning($"Failed to set up pause menu button: {ex.Message}");
             }
         }
 
         private void TrySetupPauseMenuButton()
         {
-            if (pauseMenuButton != null) return;
 
             UIRig uiRig = Player.UIRig;
             if (uiRig == null) return;
@@ -227,6 +231,7 @@ namespace QuestGraphicsSettings
 
         public override void OnUpdate()
         {
+        	base.OnUpdate();
             if (!ApplyNeeded) return;
             if (Time.time - TimerStart < 5f) return;
             ApplySettings();
@@ -242,17 +247,16 @@ namespace QuestGraphicsSettings
             SetFFR();
         }
 
-        private void SetRenderScale(string presetName = null)
+        private void SetRenderScale()
         {
             UniversalRenderPipelineAsset asset = UniversalRenderPipeline.asset;
             if (asset == null) return;
-            
-            asset.renderScale = ResolvePreset(presetName).RenderScale;
+
+            asset.renderScale = RenderScaleEntry.Value;
         }
 
-        private void SetRenderDistance(string presetName = null)
+        private void SetRenderDistance()
         {
-            GraphicsPreset preset = ResolvePreset(presetName);
             if (playerCamera == null)
             {
                 playerCamera = UnityEngine.Object.FindObjectOfType<Camera>();
@@ -264,26 +268,26 @@ namespace QuestGraphicsSettings
                 defaultRenderDistance = playerCamera.farClipPlane;
                 hasDefaultRenderDistance = true;
             }
-            if (preset.DisableRenderDistanceTweaks)
+            if (DisableRenderDistanceTweaksEntry.Value)
             {
                 playerCamera.farClipPlane = defaultRenderDistance;
                 playerCamera.useOcclusionCulling = false;
             }
             else
             {
-                playerCamera.farClipPlane = preset.RenderDistance;
+                playerCamera.farClipPlane = RenderDistanceEntry.Value;
                 playerCamera.useOcclusionCulling = true;
             }
         }
 
-        private void SetLODBias(string presetName = null)
+        private void SetLODBias()
         {
-            QualitySettings.lodBias = ResolvePreset(presetName).LODBias;
+            QualitySettings.lodBias = LODBiasEntry.Value;
         }
 
-        private void SetFFR(string presetName = null)
+        private void SetFFR()
         {
-            ffrLevel = ResolvePreset(presetName).FFRLevel;
+            ffrLevel = FFRLevelEntry.Value;
             Unity.XR.Oculus.Utils.useDynamicFoveatedRendering = false;
             Unity.XR.Oculus.Utils.foveatedRenderingLevel = ffrLevel;
         }
@@ -423,22 +427,6 @@ namespace QuestGraphicsSettings
                 LODBias = LODBiasEntry.Value,
                 FFRLevel = FFRLevelEntry.Value,
             };
-        }
-
-        private GraphicsPreset ResolvePreset(string presetName)
-        {
-            if (string.IsNullOrWhiteSpace(presetName) || string.Equals(presetName, "manual", StringComparison.OrdinalIgnoreCase))
-            {
-                return CreateCurrentPreset();
-            }
-
-            if (TryGetPreset(presetName, out GraphicsPreset preset))
-            {
-                return preset;
-            }
-
-            MelonLogger.Warning($"Preset '{presetName}' was not found. Falling back to manual settings.");
-            return CreateCurrentPreset();
         }
 
         private bool TryGetPreset(string presetName, out GraphicsPreset preset)
