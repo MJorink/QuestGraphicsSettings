@@ -39,6 +39,12 @@
 		<Reference Include="Il2CppInterop.Runtime">
 		  <HintPath>$(HOME)/repos/BL-Libs/Quest/MelonLoader/net8/Il2CppInterop.Runtime.dll</HintPath>
 		</Reference>
+		<Reference Include="UnityEngine.UI">
+		  <HintPath>$(HOME)/repos/BL-Libs/Quest/MelonLoader/Il2CppAssemblies/UnityEngine.UI.dll</HintPath>
+		</Reference>
+		<Reference Include="Unity.TextMeshPro">
+		  <HintPath>$(HOME)/repos/BL-Libs/Quest/MelonLoader/Il2CppAssemblies/Unity.TextMeshPro.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 
 	<PropertyGroup>

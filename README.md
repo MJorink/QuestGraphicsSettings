@@ -16,7 +16,3 @@ Last tested on:
 ## Discord Server
 Join the Discord server to chat, give suggestions, report issues, and get sneak peeks! <br>
 https://discord.gg/Tu7Pnq4RV7
-
-## AI Usage
-I do not use AI to vibe-code, I only use AI to help me when I am stuck at weird bugs or errors I can't figure out myself. <br>
-I feel like I have to put this here because a lot of code mods recently are AI slop.

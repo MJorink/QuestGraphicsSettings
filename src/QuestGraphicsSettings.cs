@@ -1,11 +1,16 @@
 ﻿using MelonLoader;
 using BoneLib;
 using BoneLib.BoneMenu;
+using BoneLib.BoneMenu.UI;
+using Page = BoneLib.BoneMenu.Page;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
+using Il2CppSLZ.Bonelab;
+using Il2CppTMPro;
 
 [assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "3.0.0", "Jorink")]
 [assembly: MelonGame("Stress Level Zero", "BONELAB")]
@@ -40,7 +45,9 @@ namespace QuestGraphicsSettings
         private float defaultRenderDistance;
         private float TimerStart;
         private bool ApplyNeeded = true;
+        private Page defaultPage;
         private Page presetsPage;
+        private GameObject pauseMenuButton;
         private string customPresetNameInput = string.Empty;
         private readonly Dictionary<string, FunctionElement> customPresetElements = new(StringComparer.OrdinalIgnoreCase);
 
@@ -79,11 +86,13 @@ namespace QuestGraphicsSettings
             SetupMelonPreferences();
             SetupBoneMenu();
             Hooking.OnLevelLoaded += OnLevelLoaded;
+            Hooking.OnUIRigCreated += SetupPauseMenuButton;
         }
 
         public override void OnDeinitializeMelon()
         {
             Hooking.OnLevelLoaded -= OnLevelLoaded;
+            Hooking.OnUIRigCreated -= SetupPauseMenuButton;
         }
 
         private void OnLevelLoaded(LevelInfo levelInfo)
@@ -91,11 +100,12 @@ namespace QuestGraphicsSettings
             ApplySettings();
             TimerStart = Time.time;
             ApplyNeeded = true;
+            SetupPauseMenuButton();
         }
 
         private void SetupBoneMenu()
         {
-            Page defaultPage = Page.Root.CreatePage("Jorink", Color.red).CreatePage("QuestGraphicsSettings", Color.red);
+            defaultPage = Page.Root.CreatePage("Jorink", Color.red).CreatePage("QuestGraphicsSettings", Color.red);
             defaultPage.CreateFloat("Render Scale", Color.yellow, RenderScaleEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { RenderScaleEntry.Value = a; SetRenderScale(); });
             defaultPage.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { LODBiasEntry.Value = a; SetLODBias(); });
             defaultPage.CreateInt("FFR Level", Color.green, FFRLevelEntry.Value, 1, 0, 3, (a) => { FFRLevelEntry.Value = a; SetFFR(); });
@@ -118,6 +128,78 @@ namespace QuestGraphicsSettings
             {
                 CreatePresetMenuEntry(presetName, false);
             }
+        }
+
+        private void SetupPauseMenuButton()
+        {
+            try
+            {
+                TrySetupPauseMenuButton();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void TrySetupPauseMenuButton()
+        {
+            if (pauseMenuButton != null) return;
+
+            UIRig uiRig = Player.UIRig;
+            if (uiRig == null) return;
+
+            PreferencesPanelView panelView = uiRig.popUpMenu.preferencesPanelView;
+            if (panelView == null) return;
+
+            GameObject optionsPage = panelView.pages[panelView.defaultPage];
+
+            Transform grid = optionsPage.transform.Find("grid_Options");
+            Transform controlButtonTransform = grid.Find("button_Control");
+
+            GameObject button = UnityEngine.Object.Instantiate(controlButtonTransform.gameObject, grid, false);
+            button.name = "button_QuestGraphicsSettings";
+
+            Transform quitButtonTransform = grid.Find("button_Quit");
+            if (quitButtonTransform != null)
+            {
+                button.transform.SetSiblingIndex(quitButtonTransform.GetSiblingIndex());
+            }
+
+            TMP_Text buttonText = button.transform.Find("text_Control")?.GetComponent<TMP_Text>();
+            if (buttonText != null)
+            {
+                buttonText.text = "Graphics";
+                buttonText.gameObject.name = "text_QuestGraphicsSettings";
+            }
+            Button buttonComponent = button.GetComponent<Button>();
+            buttonComponent.onClick = new Button.ButtonClickedEvent();
+            buttonComponent.onClick.AddListener((UnityEngine.Events.UnityAction)(() => OpenSettingsFromPauseMenu(panelView)));
+
+            pauseMenuButton = button;
+        }
+
+        private void OpenSettingsFromPauseMenu(PreferencesPanelView panelView)
+        {
+            int guiMenuPageIndex = FindGUIMenuPageIndex(panelView);
+            if (guiMenuPageIndex >= 0)
+            {
+                panelView.PAGESELECT(guiMenuPageIndex);
+            }
+
+            Menu.OpenPage(defaultPage);
+        }
+
+        private int FindGUIMenuPageIndex(PreferencesPanelView panelView)
+        {
+            GameObject guiMenuObject = GUIMenu.Instance?.gameObject;
+            if (guiMenuObject == null) return -1;
+
+            for (int i = 0; i < panelView.pages.Length; i++)
+            {
+                if (panelView.pages[i] == guiMenuObject) return i;
+            }
+
+            return -1;
         }
 
         private void SetupMelonPreferences()
@@ -163,10 +245,8 @@ namespace QuestGraphicsSettings
         private void SetRenderScale(string presetName = null)
         {
             UniversalRenderPipelineAsset asset = UniversalRenderPipeline.asset;
-            if (asset == null)
-            {
-                return;
-            }
+            if (asset == null) return;
+            
             asset.renderScale = ResolvePreset(presetName).RenderScale;
         }
 
@@ -177,10 +257,7 @@ namespace QuestGraphicsSettings
             {
                 playerCamera = UnityEngine.Object.FindObjectOfType<Camera>();
             }
-            if (playerCamera == null)
-            {
-                return;
-            }
+            if (playerCamera == null) return;
             if (!hasDefaultRenderDistance || defaultRenderDistanceCamera != playerCamera)
             {
                 defaultRenderDistanceCamera = playerCamera;
@@ -269,18 +346,12 @@ namespace QuestGraphicsSettings
         private void LoadCustomPresets()
         {
             customPresets.Clear();
-            if (string.IsNullOrWhiteSpace(CustomPresetsEntry.Value))
-            {
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(CustomPresetsEntry.Value)) return;
 
             try
             {
                 Dictionary<string, GraphicsPreset> presets = JsonSerializer.Deserialize<Dictionary<string, GraphicsPreset>>(CustomPresetsEntry.Value);
-                if (presets == null)
-                {
-                    return;
-                }
+                if (presets == null) return;
 
                 foreach ((string presetName, GraphicsPreset preset) in presets)
                 {
@@ -328,10 +399,7 @@ namespace QuestGraphicsSettings
 
         private void CreatePresetMenuEntry(string presetName, bool isBuiltIn)
         {
-            if (presetsPage == null)
-            {
-                return;
-            }
+            if (presetsPage == null) return;
 
             Color presetColor = isBuiltIn ? Color.yellow : Color.green;
             FunctionElement element = presetsPage.CreateFunction(presetName, presetColor, () =>
