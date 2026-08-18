@@ -12,7 +12,7 @@ using UnityEngine.UI;
 using Il2CppSLZ.Bonelab;
 using Il2CppTMPro;
 
-[assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "3.0.0", "Jorink")]
+[assembly: MelonInfo(typeof(QuestGraphicsSettings.Core), "QuestGraphicsSettings", "3.0.1", "Jorink")]
 [assembly: MelonGame("Stress Level Zero", "BONELAB")]
 
 namespace QuestGraphicsSettings
