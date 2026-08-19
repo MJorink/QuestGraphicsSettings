@@ -56,7 +56,7 @@
 		<Compile Include="QuestGraphicsSettings.cs" />
 	</ItemGroup>
 
-	<Target Name="CopyOutput" AfterTargets="Build" Condition="'$(HOME)/repos/QuestGraphicsSettings/Mods/Mods' != ''">
-		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(HOME)/repos/QuestGraphicsSettings/Mods/Mods" />
+	<Target Name="CopyOutput" AfterTargets="Build" Condition="'$(HOME)/repos/QuestGraphicsSettings/docs/Mods' != ''">
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(HOME)/repos/QuestGraphicsSettings/docs/Mods" />
 	</Target>
 </Project>

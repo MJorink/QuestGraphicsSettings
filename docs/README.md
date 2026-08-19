@@ -3,7 +3,7 @@ A BoneLab mod that brings some graphics settings to Quest Standalone. <br>
 
 Last tested on:
 - Lemonloader: `0.6.5`
-- BoneLab: Patch 6
+- BoneLab: `Patch 6`
 
 ## Current Features
 - Render Scale
