@@ -107,7 +107,7 @@ namespace QuestGraphicsSettings
 
         private void SetupBoneMenu()
         {
-            defaultPage = Page.Root.CreatePage("Jorink", Color.red).CreatePage("QuestGraphicsSettings", Color.red);
+            defaultPage = Page.Root.CreatePage("Jorink", Color.red).CreatePage("QuestGraphicsSettings", Color.yellow);
             defaultPage.CreateFloat("Render Scale", Color.yellow, RenderScaleEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { RenderScaleEntry.Value = a; SetRenderScale(); });
             defaultPage.CreateFloat("LOD Bias", Color.yellow, LODBiasEntry.Value, 0.05f, 0.50f, 2.0f, (a) => { LODBiasEntry.Value = a; SetLODBias(); });
             defaultPage.CreateInt("FFR Level", Color.green, FFRLevelEntry.Value, 1, 0, 3, (a) => { FFRLevelEntry.Value = a; SetFFR(); });
