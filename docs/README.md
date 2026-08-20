@@ -1,11 +1,8 @@
 # QuestGraphicsSettings
 A BoneLab mod that brings some graphics settings to Quest Standalone. <br>
+Last tested on `Patch 6` <br>
 
-Last tested on:
-- Lemonloader: `0.6.5`
-- BoneLab: `Patch 6`
-
-## Current Features
+## Settings
 - Render Scale
 - Render Distance (Experimental)
 - LOD Bias
