@@ -1,9 +1,9 @@
 {
     "name": "QuestGraphicsSettings",
-    "version_number": "3.0.2",
+    "version_number": "3.1.0",
     "website_url": "https://github.com/MJorink/QuestGraphicsSettings",
     "description": "A BoneLab mod that brings some graphics settings to Quest Standalone.",
     "dependencies": [
-        "bonelib-BoneLib-3.2.1"
+        "bonelib-BoneLib-3.2.2"
     ]
 }

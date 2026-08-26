@@ -7,8 +7,9 @@ Last tested on `Patch 6` <br>
 - Render Distance (Experimental)
 - LOD Bias
 - FFR
-- Premade presets
-- Custom presets
+
+## Why no bloom or shadows?
+(Write this later) <br>
 
 ## Discord Server
 Join the Discord server to chat, give suggestions, report issues, and get sneak peeks! <br>
