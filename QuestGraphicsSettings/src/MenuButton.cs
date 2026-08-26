@@ -1,4 +1,5 @@
 using MelonLoader;
+using BoneLib;
 using BoneLib.BoneMenu;
 using BoneLib.BoneMenu.UI;
 using UnityEngine;
@@ -14,9 +15,6 @@ namespace QuestGraphicsSettings
 		
 		private static void CreateMenuButton()
 		{
-		    var uiRig = UIRig.Instance;
-		    if (uiRig == null) return;
-
 		    // Add the button
 		    var panelView = uiRig.popUpMenu.preferencesPanelView;
 
@@ -34,10 +32,8 @@ namespace QuestGraphicsSettings
 		    buttonText.text = "Graphics";
 		    buttonText.gameObject.name = "text_Graphics";
 
-		    var buttonScript = graphicsButton.GetComponent<Button>();
-		    buttonScript.onClick = new Button.ButtonClickedEvent();
-		    
 		    Button buttonComponent = graphicsButton.GetComponent<Button>();
+		    buttonComponent.onClick = new Button.ButtonClickedEvent();
 		    buttonComponent.onClick.AddListener((UnityEngine.Events.UnityAction)(() => OpenFromMenu(panelView)));
 
 		    menuButton = graphicsButton;

@@ -3,6 +3,7 @@ using BoneLib;
 using BoneLib.BoneMenu;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using Il2CppSLZ.Bonelab;
 
 namespace QuestGraphicsSettings
 {
@@ -12,8 +13,8 @@ namespace QuestGraphicsSettings
     	public const string Description = "A BoneLab mod that brings some graphics settings to Quest Standalone.";
     	public const string Version = "3.1.0";
 
-    	private static Page defaultPage;
-    	private static Page experimentalPage;
+    	private static BoneLib.BoneMenu.Page defaultPage;
+    	private static BoneLib.BoneMenu.Page experimentalPage;
     	
 		private static MelonPreferences_Entry<float> RenderScale;
 		private static MelonPreferences_Entry<bool> enableCulling;
@@ -25,6 +26,8 @@ namespace QuestGraphicsSettings
 
 		private static UniversalRenderPipelineAsset asset;
 		private static Camera playerCamera;
+
+		private static UIRig uiRig;
 
 		private static bool needsApply = false;
 
@@ -78,7 +81,7 @@ namespace QuestGraphicsSettings
 		{
 			playerCamera = UnityEngine.Object.FindObjectOfType<Camera>();
 			asset = UniversalRenderPipeline.asset;
-			
+			uiRig = Player.UIRig;
 			needsApply = true;
 		}
 
@@ -98,7 +101,7 @@ namespace QuestGraphicsSettings
 
 		private static bool isModAllowed()
 		{
-			if (!needsApply || playerCamera == null || asset == null || BoneLib.HelperMethods.IsLoading()) return false;
+			if (!needsApply || playerCamera == null || asset == null || uiRig == null || BoneLib.HelperMethods.IsLoading()) return false;
 			return true;
 		}
 
