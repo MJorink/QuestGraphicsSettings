@@ -6,12 +6,15 @@ using UnityEngine.Rendering.Universal;
 
 namespace QuestGraphicsSettings
 {
-	public class QuestGraphicsSettingsMod : MelonMod
+	public partial class QuestGraphicsSettingsMod : MelonMod
 	{
     	public const string Title = "QuestGraphicsSettings";
     	public const string Description = "A BoneLab mod that brings some graphics settings to Quest Standalone.";
     	public const string Version = "3.1.0";
 
+    	private static Page defaultPage;
+    	private static Page experimentalPage;
+    	
 		private static MelonPreferences_Entry<float> RenderScale;
 		private static MelonPreferences_Entry<bool> enableCulling;
 		private static MelonPreferences_Entry<float> farClipPlane;
@@ -22,6 +25,8 @@ namespace QuestGraphicsSettings
 
 		private static UniversalRenderPipelineAsset asset;
 		private static Camera playerCamera;
+
+		private static bool needsApply = false;
 
 		public override void OnInitializeMelon()
 		{
@@ -49,7 +54,7 @@ namespace QuestGraphicsSettings
 
 		private void SetupBoneMenu()
 		{
-			Page defaultPage = Page.Root.CreatePage("Jorink", Color.red).CreatePage("QuestGraphicsSettings", Color.yellow);
+			defaultPage = BoneLib.BoneMenu.Page.Root.CreatePage("Jorink", Color.red).CreatePage("QuestGraphicsSettings", Color.yellow);
 
             defaultPage.CreateFloat("Render Scale", Color.yellow, RenderScale.Value, 0.05f, 0.50f, 2.0f, (a) => { RenderScale.Value = a; SetRenderScale(); });
             defaultPage.CreateFloat("LOD Bias", Color.yellow, LODBias.Value, 0.05f, 0.50f, 2.0f, (a) => { LODBias.Value = a; SetLODBias(); });
@@ -57,7 +62,7 @@ namespace QuestGraphicsSettings
             defaultPage.CreateBool("Dynamic FFR", Color.green, dynamicFFR.Value, (a) => { dynamicFFR.Value = a; SetDynamicFFR(); });
             defaultPage.CreateFunction("Save Settings", Color.cyan, () => { MelonPreferences.Save(); });
 
-            Page experimentalPage = defaultPage.CreatePage("Experimental", Color.yellow);
+            experimentalPage = defaultPage.CreatePage("Experimental", Color.yellow);
             
             experimentalPage.CreateBool("Enable farClipPlane", Color.cyan, enableFarClipPlane.Value, (a) => { enableFarClipPlane.Value = a; SetFarClipPlane(); });
             experimentalPage.CreateFloat("farClipPlane (Render Distance)", Color.green, farClipPlane.Value, 5f, 5f, 200f, (a) => { farClipPlane.Value = a; SetFarClipPlane(); });
@@ -73,18 +78,27 @@ namespace QuestGraphicsSettings
 		{
 			playerCamera = UnityEngine.Object.FindObjectOfType<Camera>();
 			asset = UniversalRenderPipeline.asset;
+			
+			needsApply = true;
+		}
 
+		public override void OnUpdate()
+		{
 			if (!isModAllowed()) return;
+			needsApply = false;
 			SetRenderScale();
 			SetOcclusionCulling();
 			SetFarClipPlane();
 			SetLODBias();
 			SetFFR();
+			
+			if (menuButton != null) return;
+			CreateMenuButton();
 		}
 
 		private static bool isModAllowed()
 		{
-			if (playerCamera == null || asset == null) return false;
+			if (!needsApply || playerCamera == null || asset == null || BoneLib.HelperMethods.IsLoading()) return false;
 			return true;
 		}
 

@@ -3,14 +3,16 @@ A BoneLab mod that brings some graphics settings to Quest Standalone. <br>
 Last tested on `Patch 6` <br>
 
 ## Settings
+- Graphics button on in-game menu
 - Render Scale
 - Render Distance (Experimental)
 - LOD Bias
 - FFR
 
-## Why no bloom or shadows?
-(Write this later) <br>
-
 ## Discord Server
 Join the Discord server to chat, give suggestions, report issues, and get sneak peeks! <br>
 https://discord.gg/Tu7Pnq4RV7
+
+## Credits
+Fusion by Lakatrazz, I used a big part of his code to make the graphics menu button. <br>
+https://thunderstore.io/c/bonelab/p/Lakatrazz/Fusion/ <br>

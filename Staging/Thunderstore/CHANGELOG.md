@@ -1,7 +1,6 @@
 **v3.1.0**
 - Code Refresh
 - Removed preset system, it was really messy
-- Removed Graphics button in menu, might add back later in a cleaner way
 
 **v3.0.2**
 - Fixed Mods folder having no dll, while I zipped the mod I forgot the recursive flag.
