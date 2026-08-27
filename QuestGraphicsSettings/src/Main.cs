@@ -39,7 +39,7 @@ namespace QuestGraphicsSettings
 
 		private void SetupMelonPreferences()
 		{
-			MelonPreferences_Category category = MelonPreferences.CreateCategory("QuestGraphicsSettings");
+			var category = MelonPreferences.CreateCategory("QuestGraphicsSettings");
 
             RenderScale = category.CreateEntry("Render Scale", 1.0f);
             enableCulling = category.CreateEntry("Enable Culling", false);
@@ -50,7 +50,6 @@ namespace QuestGraphicsSettings
             dynamicFFR = category.CreateEntry("Dynamic FFR", false);
 
             MelonPreferences.Save();
-            category.SaveToFile();
 		}
 
 		private void SetupBoneMenu()
