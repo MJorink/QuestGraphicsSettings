@@ -14,8 +14,7 @@ namespace QuestGraphicsSettings
     	public const string Version = "3.1.0";
 
     	private static BoneLib.BoneMenu.Page defaultPage;
-    	private static BoneLib.BoneMenu.Page experimentalPage;
-    	
+
 		private static MelonPreferences_Entry<float> RenderScale;
 		private static MelonPreferences_Entry<bool> enableCulling;
 		private static MelonPreferences_Entry<float> farClipPlane;
@@ -40,8 +39,7 @@ namespace QuestGraphicsSettings
 
 		private void SetupMelonPreferences()
 		{
-			MelonPreferences_Category category;
-			category = MelonPreferences.CreateCategory("QuestGraphicsSettings");
+			MelonPreferences_Category category = MelonPreferences.CreateCategory("QuestGraphicsSettings");
 
             RenderScale = category.CreateEntry("Render Scale", 1.0f);
             enableCulling = category.CreateEntry("Enable Culling", false);
@@ -65,7 +63,7 @@ namespace QuestGraphicsSettings
             defaultPage.CreateBool("Dynamic FFR", Color.green, dynamicFFR.Value, (a) => { dynamicFFR.Value = a; SetDynamicFFR(); });
             defaultPage.CreateFunction("Save Settings", Color.cyan, () => { MelonPreferences.Save(); });
 
-            experimentalPage = defaultPage.CreatePage("Experimental", Color.yellow);
+            var experimentalPage = defaultPage.CreatePage("Experimental", Color.yellow);
             
             experimentalPage.CreateBool("Enable farClipPlane", Color.cyan, enableFarClipPlane.Value, (a) => { enableFarClipPlane.Value = a; SetFarClipPlane(); });
             experimentalPage.CreateFloat("farClipPlane (Render Distance)", Color.green, farClipPlane.Value, 5f, 5f, 200f, (a) => { farClipPlane.Value = a; SetFarClipPlane(); });
