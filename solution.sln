@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("QuestGraphicsSettings") = "QuestGraphicsSettings", "QuestGraphicsSettings/QuestGraphicsSettings.csproj", "QuestGraphicsSettings"
+Project("QuestGraphicsSettings") = "QuestGraphicsSettings", "Mod/QuestGraphicsSettings.csproj", "QuestGraphicsSettings"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

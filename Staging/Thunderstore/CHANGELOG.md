@@ -1,5 +1,5 @@
 **v3.1.0**
-- Code Refresh
+- Rewrite with JLib
 - Removed preset system, it was really messy, had a poll in my discord server and almost no-one used this feature.
 
 **v3.0.2**

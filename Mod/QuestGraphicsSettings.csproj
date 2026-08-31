@@ -2,13 +2,13 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <AssemblyTitle>QuestGraphicsSettings</AssemblyTitle>
-    <Product>QuestGraphicsSettings</Product>
   </PropertyGroup>
 	<ItemGroup>
 		<Reference Include="BoneLib">
 		  <HintPath>$(HOME)/repos/BL-Libs/Mods/BoneLib.dll</HintPath>
+		</Reference>
+		<Reference Include="JLib">
+		  <HintPath>$(HOME)/repos/JLib/Staging/Thunderstore/Mods/JLib.dll</HintPath>
 		</Reference>
 		<Reference Include="Assembly-CSharp">
 		  <HintPath>$(HOME)/repos/BL-Libs/Quest/MelonLoader/Il2CppAssemblies/Assembly-CSharp.dll</HintPath>

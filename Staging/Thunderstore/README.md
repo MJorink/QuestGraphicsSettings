@@ -1,6 +1,5 @@
 # QuestGraphicsSettings
 A BoneLab mod that brings some graphics settings to Quest Standalone. <br>
-Last tested on `Patch 6` <br>
 
 ## Settings
 - Graphics button on in-game menu
@@ -15,4 +14,4 @@ https://discord.gg/Tu7Pnq4RV7
 
 ## Credits
 Fusion by Lakatrazz, I used a big part of his code to make the graphics menu button. <br>
-https://thunderstore.io/c/bonelab/p/Lakatrazz/Fusion/ <br>
+https://thunderstore.io/c/bonelab/p/Lakatrazz/Fusion/
