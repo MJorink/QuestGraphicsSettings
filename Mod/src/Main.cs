@@ -23,9 +23,7 @@ namespace questgraphicssettings
 		private MelonPreferences_Entry<float> farClipPlane;
 		private MelonPreferences_Entry<bool> enableCulling;
 
-		private UniversalRenderPipelineAsset asset;
 		private Camera playerCamera;
-		private UIRig uiRig;
 		private GameObject menuButton;
 		private bool needsApply;
 
@@ -52,19 +50,18 @@ namespace questgraphicssettings
 		private void OnLevelLoaded(LevelInfo levelInfo)
 		{
 			playerCamera = UnityEngine.Object.FindObjectOfType<Camera>();
-			asset = UniversalRenderPipeline.asset;
-			uiRig = Player.UIRig;
 			needsApply = true;
 		}
 
 		public override void OnUpdate()
 		{
-			if (needsApply && playerCamera != null && !HelperMethods.IsLoading()) Apply();
+			if (needsApply && !HelperMethods.IsLoading()) Apply();
 			if (menuButton == null) CreateMenuButton();
 		}
 
 		private void Apply()
 		{
+			var asset = UniversalRenderPipeline.asset;
 			if (playerCamera == null || asset == null) return;
 			needsApply = false;
 
@@ -78,6 +75,9 @@ namespace questgraphicssettings
 
 		private void CreateMenuButton()
 		{
+			var uiRig = UIRig.Instance;
+			if (uiRig == null) return;
+			
 			var panelView = uiRig.popUpMenu.preferencesPanelView;
 			var gridOptions = panelView.transform.Find("page_OPTIONS/grid_Options");
 			var controlButton = gridOptions.Find("button_Control").gameObject;
