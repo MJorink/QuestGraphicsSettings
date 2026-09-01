@@ -21,7 +21,6 @@ namespace questgraphicssettings
 		private MelonPreferences_Entry<bool> dynamicFFR;
 		private MelonPreferences_Entry<bool> enableFarClipPlane;
 		private MelonPreferences_Entry<float> farClipPlane;
-		private MelonPreferences_Entry<bool> enableCulling;
 
 		private Camera playerCamera;
 		private GameObject menuButton;
@@ -42,7 +41,6 @@ namespace questgraphicssettings
 
 			enableFarClipPlane = experimental.Bool("Enable farClipPlane", false, Color.cyan, _ => Apply());
 			farClipPlane = experimental.Float("farClipPlane (Render Distance)", 100f, 5f, 5f, 200f, Color.green, _ => Apply());
-			enableCulling = experimental.Bool("Enable Occlusion Culling", false, Color.cyan, _ => Apply());
 
 			Hooking.OnLevelLoaded += OnLevelLoaded;
 		}
@@ -69,7 +67,6 @@ namespace questgraphicssettings
 			QualitySettings.lodBias = lodBias.Value;
 			Unity.XR.Oculus.Utils.foveatedRenderingLevel = ffrLevel.Value;
 			Unity.XR.Oculus.Utils.useDynamicFoveatedRendering = dynamicFFR.Value;
-			playerCamera.useOcclusionCulling = enableCulling.Value;
 			playerCamera.farClipPlane = enableFarClipPlane.Value ? farClipPlane.Value : 1000f;
 		}
 
