@@ -1,5 +1,5 @@
 # QuestGraphicsSettings
-A BoneLab mod that brings some graphics settings to Quest Standalone. <br>
+A BONELAB mod that brings some graphics settings to Quest Standalone.
 
 ## Settings
 - Graphics button on in-game menu

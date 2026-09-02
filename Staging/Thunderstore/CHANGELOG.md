@@ -1,6 +1,7 @@
-**v3.1.0**
+**v4.0.0**
 - Rewrite with JLib
 - Removed preset system, it was really messy, had a poll in my discord server and almost no-one used this feature.
+- All graphics now apply as soon as loading is done.
 
 **v3.0.2**
 - Fixed Mods folder having no dll, while I zipped the mod I forgot the recursive flag.

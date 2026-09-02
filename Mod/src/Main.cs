@@ -13,7 +13,7 @@ namespace questgraphicssettings
 {
 	public class QuestGraphicsSettings : MelonMod
 	{
-		public const string Version = "3.1.0";
+		public const string Version = "4.0.0";
 
 		private MelonPreferences_Entry<float> renderScale;
 		private MelonPreferences_Entry<float> lodBias;
