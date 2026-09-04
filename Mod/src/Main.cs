@@ -13,8 +13,9 @@ namespace questgraphicssettings
 {
 	public class QuestGraphicsSettings : MelonMod
 	{
-		public const string Version = "4.0.0";
+		public const string Version = "4.0.1";
 
+		private ModPage menu;
 		private MelonPreferences_Entry<float> renderScale;
 		private MelonPreferences_Entry<float> lodBias;
 		private MelonPreferences_Entry<int> ffrLevel;
@@ -22,11 +23,9 @@ namespace questgraphicssettings
 		private MelonPreferences_Entry<bool> enableFarClipPlane;
 		private MelonPreferences_Entry<float> farClipPlane;
 
-		private Camera playerCamera;
 		private GameObject menuButton;
 		private bool needsApply;
-
-		private ModPage menu; // OpenFromMenu() needs this too
+		
 
 		public override void OnInitializeMelon()
 		{
@@ -40,16 +39,12 @@ namespace questgraphicssettings
 			var experimental = menu.SubPage("Experimental", Color.yellow);
 
 			enableFarClipPlane = experimental.Bool("Enable farClipPlane", false, Color.cyan, _ => Apply());
-			farClipPlane = experimental.Float("farClipPlane (Render Distance)", 100f, 5f, 5f, 200f, Color.green, _ => Apply());
+			farClipPlane = experimental.Float("farClipPlane (Render Distance)", 250f, 5f, 5f, 500f, Color.green, _ => Apply());
 
 			Hooking.OnLevelLoaded += OnLevelLoaded;
 		}
 
-		private void OnLevelLoaded(LevelInfo levelInfo)
-		{
-			playerCamera = UnityEngine.Object.FindObjectOfType<Camera>();
-			needsApply = true;
-		}
+		private void OnLevelLoaded(LevelInfo levelInfo) => needsApply = true;
 
 		public override void OnUpdate()
 		{
@@ -60,14 +55,15 @@ namespace questgraphicssettings
 		private void Apply()
 		{
 			var asset = UniversalRenderPipeline.asset;
-			if (playerCamera == null || asset == null) return;
+			var cam = JLib.playerCamera;
+			if (cam == null || asset == null) return;
+			
 			needsApply = false;
-
 			asset.renderScale = renderScale.Value;
 			QualitySettings.lodBias = lodBias.Value;
 			Unity.XR.Oculus.Utils.foveatedRenderingLevel = ffrLevel.Value;
 			Unity.XR.Oculus.Utils.useDynamicFoveatedRendering = dynamicFFR.Value;
-			playerCamera.farClipPlane = enableFarClipPlane.Value ? farClipPlane.Value : 1000f;
+			cam.farClipPlane = enableFarClipPlane.Value ? farClipPlane.Value : 1000f;
 		}
 
 		private void CreateMenuButton()

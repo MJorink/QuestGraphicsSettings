@@ -1,3 +1,6 @@
+**v4.0.1**
+- Increased farClipPlane maximum from 200 -> 500
+
 **v4.0.0**
 - Rewrite with JLib
 - Removed preset system, it was really messy, had a poll in my discord server and almost no-one used this feature.
